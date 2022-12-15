@@ -1,6 +1,6 @@
 # libnapi
 
-Minimal Node-API compatibility layer for https://github.com/holepunchto/libjs.
+Node-API compatibility layer for https://github.com/holepunchto/libjs.
 
 ## API
 
