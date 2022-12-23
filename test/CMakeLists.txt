@@ -1,5 +1,6 @@
 list(APPEND tests
   basic
+  basic-inline
 )
 
 foreach(test IN LISTS tests)

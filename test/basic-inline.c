@@ -1,3 +1,5 @@
+#define NAPI_INLINE
+
 #include <assert.h>
 
 #include "../include/napi.h"
