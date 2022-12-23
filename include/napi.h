@@ -133,8 +133,32 @@ napi_create_string_utf8 (napi_env env, const char *str, size_t len, napi_value *
 }
 
 NAPI_EXPORT napi_status
+napi_create_function (napi_env env, const char *name, size_t len, napi_callback cb, void *data, napi_value *result) {
+  js_create_function(env, name, len, cb, data, result);
+  return napi_ok;
+}
+
+NAPI_EXPORT napi_status
 napi_get_global (napi_env env, napi_value *result) {
   js_get_global(env, result);
+  return napi_ok;
+}
+
+NAPI_EXPORT napi_status
+napi_get_null (napi_env env, napi_value *result) {
+  js_get_null(env, result);
+  return napi_ok;
+}
+
+NAPI_EXPORT napi_status
+napi_get_undefined (napi_env env, napi_value *result) {
+  js_get_undefined(env, result);
+  return napi_ok;
+}
+
+NAPI_EXPORT napi_status
+napi_get_boolean (napi_env env, bool value, napi_value *result) {
+  js_get_boolean(env, value, result);
   return napi_ok;
 }
 

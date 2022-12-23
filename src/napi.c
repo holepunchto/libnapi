@@ -43,7 +43,19 @@ extern napi_status
 napi_create_string_utf8 (napi_env env, const char *str, size_t len, napi_value *result);
 
 extern napi_status
+napi_create_function (napi_env env, const char *name, size_t len, napi_callback cb, void *data, napi_value *result);
+
+extern napi_status
 napi_get_global (napi_env env, napi_value *result);
+
+extern napi_status
+napi_get_null (napi_env env, napi_value *result);
+
+extern napi_status
+napi_get_undefined (napi_env env, napi_value *result);
+
+extern napi_status
+napi_get_boolean (napi_env env, bool value, napi_value *result);
 
 extern napi_status
 napi_get_value_int32 (napi_env env, napi_value value, int32_t *result);
