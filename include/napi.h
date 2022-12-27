@@ -22,6 +22,8 @@ typedef js_callback_info_t *napi_callback_info;
 
 typedef napi_value (*napi_callback)(napi_env, napi_callback_info);
 
+#include "napi/modules.h"
+
 typedef enum {
   napi_ok,
   napi_invalid_arg,
