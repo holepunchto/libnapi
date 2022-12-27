@@ -25,6 +25,7 @@ target_sources(
   napi
   INTERFACE
     include/napi.h
+    include/napi/modules.h
   PRIVATE
     src/napi.c
 )
@@ -67,6 +68,8 @@ target_link_libraries(
 install(TARGETS napi_shared napi_static)
 
 install(FILES include/napi.h DESTINATION include)
+
+install(DIRECTORY include/napi DESTINATION include)
 
 if(PROJECT_IS_TOP_LEVEL)
   enable_testing()
