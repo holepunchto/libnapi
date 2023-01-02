@@ -94,10 +94,10 @@ extern napi_status
 napi_call_function (napi_env env, napi_value recv, napi_value fn, size_t argc, const napi_value argv[], napi_value *result);
 
 extern napi_status
-napi_make_callback (napi_env env, napi_value recv, napi_value fn, size_t argc, const napi_value argv[], napi_value *result);
+napi_make_callback (napi_env env, napi_async_context async_hook, napi_value recv, napi_value fn, size_t argc, const napi_value argv[], napi_value *result);
 
 extern napi_status
-napi_get_callback_info (napi_env env, napi_callback_info info, size_t *argc, napi_value argv[], napi_value *self, void **data);
+napi_get_cb_info (napi_env env, napi_callback_info info, size_t *argc, napi_value argv[], napi_value *self, void **data);
 
 extern napi_status
 napi_get_arraybuffer_info (napi_env env, napi_value arraybuffer, void **data, size_t *len);
@@ -106,7 +106,22 @@ extern napi_status
 napi_get_typedarray_info (napi_env env, napi_value typedarray, napi_typedarray_type *type, size_t *len, void **data, napi_value *arraybuffer, size_t *offset);
 
 extern napi_status
+napi_get_buffer_info (napi_env env, napi_value buffer, void **data, size_t *len);
+
+extern napi_status
 napi_get_dataview_info (napi_env env, napi_value dataview, size_t *len, void **data, napi_value *arraybuffer, size_t *offset);
 
 extern napi_status
 napi_throw (napi_env env, napi_value error);
+
+extern napi_status
+napi_throw_error (napi_env env, const char *code, const char *msg);
+
+extern napi_status
+napi_get_uv_event_loop (napi_env env, uv_loop_t **loop);
+
+extern napi_status
+napi_get_and_clear_last_exception (napi_env env, napi_value *result);
+
+extern napi_status
+napi_fatal_exception (napi_env env, napi_value err);

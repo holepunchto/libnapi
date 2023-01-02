@@ -20,6 +20,7 @@ typedef js_escapable_handle_scope_t *napi_escapable_handle_scope;
 typedef js_ref_t *napi_ref;
 typedef js_deferred_t *napi_deferred;
 typedef js_callback_info_t *napi_callback_info;
+typedef void *napi_async_context;
 
 typedef napi_value (*napi_callback)(napi_env, napi_callback_info);
 typedef void (*napi_finalize)(napi_env env, void *finalize_data, void *finalize_hint);
@@ -253,13 +254,13 @@ napi_call_function (napi_env env, napi_value recv, napi_value fn, size_t argc, c
 }
 
 NAPI_INLINABLE napi_status
-napi_make_callback (napi_env env, napi_value recv, napi_value fn, size_t argc, const napi_value argv[], napi_value *result) {
+napi_make_callback (napi_env env, napi_async_context async_hook, napi_value recv, napi_value fn, size_t argc, const napi_value argv[], napi_value *result) {
   js_make_callback(env, recv, fn, argc, argv, result);
   return napi_ok;
 }
 
 NAPI_INLINABLE napi_status
-napi_get_callback_info (napi_env env, napi_callback_info info, size_t *argc, napi_value argv[], napi_value *self, void **data) {
+napi_get_cb_info (napi_env env, napi_callback_info info, size_t *argc, napi_value argv[], napi_value *self, void **data) {
   js_get_callback_info(env, info, argc, argv, self, data);
   return napi_ok;
 }
@@ -277,6 +278,12 @@ napi_get_typedarray_info (napi_env env, napi_value typedarray, napi_typedarray_t
 }
 
 NAPI_INLINABLE napi_status
+napi_get_buffer_info (napi_env env, napi_value buffer, void **data, size_t *len) {
+  js_get_typedarray_info(env, buffer, NULL, len, data, NULL, NULL);
+  return napi_ok;
+}
+
+NAPI_INLINABLE napi_status
 napi_get_dataview_info (napi_env env, napi_value dataview, size_t *len, void **data, napi_value *arraybuffer, size_t *offset) {
   js_get_dataview_info(env, dataview, len, data, arraybuffer, offset);
   return napi_ok;
@@ -285,6 +292,30 @@ napi_get_dataview_info (napi_env env, napi_value dataview, size_t *len, void **d
 NAPI_INLINABLE napi_status
 napi_throw (napi_env env, napi_value error) {
   js_throw(env, error);
+  return napi_ok;
+}
+
+NAPI_INLINABLE napi_status
+napi_throw_error (napi_env env, const char *code, const char *msg) {
+  // TODO
+  return napi_ok;
+}
+
+NAPI_INLINABLE napi_status
+napi_get_uv_event_loop (napi_env env, uv_loop_t **loop) {
+  js_get_env_loop(env, loop);
+  return napi_ok;
+}
+
+NAPI_INLINABLE napi_status
+napi_get_and_clear_last_exception (napi_env env, napi_value *result) {
+  // TODO
+  return napi_ok;
+}
+
+NAPI_INLINABLE napi_status
+napi_fatal_exception (napi_env env, napi_value err) {
+  // TODO
   return napi_ok;
 }
 
