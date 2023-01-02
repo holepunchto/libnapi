@@ -3,11 +3,30 @@
 
 #include "../napi.h"
 
+// https://stackoverflow.com/a/2390626
+
+#if defined(__cplusplus)
+#define NAPI_INITIALIZER(f) \
+  static void f(void); \
+  struct f##_ { \
+    f##_(void) { f(); } \
+  } f##_; \
+  static void f(void)
+#elif defined(_MSC_VER)
+#pragma section(".CRT$XCU", read)
+#define NAPI_INITIALIZER(f) \
+  static void f(void); \
+  __declspec(dllexport, allocate(".CRT$XCU")) void (*f##_)(void) = f;
+#else
+#define NAPI_INITIALIZER(f) \
+  static void f(void) __attribute__((constructor)); \
+  static void f(void)
+#endif
+
 #define NAPI_MODULE_VERSION 1
 
 #define NAPI_MODULE(name, fn) \
-  static void module_initializer(void) __attribute__((constructor)); \
-  static void module_initializer(void) { \
+  NAPI_INITIALIZER(module_initializer) { \
     napi_module module = { \
       NAPI_MODULE_VERSION, \
       0, \
