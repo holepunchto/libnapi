@@ -6,21 +6,18 @@
 #define NAPI_MODULE_VERSION 1
 
 #define NAPI_MODULE(name, fn) \
-  namespace { \
-  static struct module_initializer { \
-    module_initializer() { \
-      napi_module module = { \
-        NAPI_MODULE_VERSION, \
-        0, \
-        __FILE__, \
-        fn, \
-        #name, \
-        NULL, \
-        {0}, \
-      }; \
-      napi_module_register(&module); \
-    } \
-  } name; \
+  static void module_initializer(void) __attribute__((constructor)); \
+  static void module_initializer(void) { \
+    napi_module module = { \
+      NAPI_MODULE_VERSION, \
+      0, \
+      __FILE__, \
+      fn, \
+      #name, \
+      NULL, \
+      {0}, \
+    }; \
+    napi_module_register(&module); \
   }
 
 typedef napi_value (*napi_addon_register_func)(napi_env env, napi_value exports);

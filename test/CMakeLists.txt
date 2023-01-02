@@ -1,5 +1,3 @@
-enable_language(CXX)
-
 list(APPEND tests
   basic
   basic-inline
@@ -7,7 +5,7 @@ list(APPEND tests
 )
 
 foreach(test IN LISTS tests)
-  add_executable(${test} ${test}.cc)
+  add_executable(${test} ${test}.c)
 
   target_link_libraries(
     ${test}
