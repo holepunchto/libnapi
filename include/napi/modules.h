@@ -25,6 +25,8 @@
 
 #define NAPI_MODULE_VERSION 1
 
+#define NAPI_MODULE_NAME(name) #name
+
 #define NAPI_MODULE(name, fn) \
   NAPI_INITIALIZER(module_initializer) { \
     napi_module module = { \
@@ -32,7 +34,7 @@
       0, \
       __FILE__, \
       fn, \
-      #name, \
+      NAPI_MODULE_NAME(name), \
       NULL, \
       {0}, \
     }; \
