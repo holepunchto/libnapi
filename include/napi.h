@@ -18,9 +18,11 @@ typedef js_value_t *napi_value;
 typedef js_handle_scope_t *napi_handle_scope;
 typedef js_escapable_handle_scope_t *napi_escapable_handle_scope;
 typedef js_ref_t *napi_ref;
+typedef js_deferred_t *napi_deferred;
 typedef js_callback_info_t *napi_callback_info;
 
 typedef napi_value (*napi_callback)(napi_env, napi_callback_info);
+typedef void (*napi_finalize)(napi_env env, void *finalize_data, void *finalize_hint);
 
 #include "napi/modules.h"
 
@@ -49,6 +51,20 @@ typedef enum {
   napi_would_deadlock,
   napi_no_external_buffers_allowed
 } napi_status;
+
+typedef enum {
+  napi_int8_array,
+  napi_uint8_array,
+  napi_uint8_clamped_array,
+  napi_int16_array,
+  napi_uint16_array,
+  napi_int32_array,
+  napi_uint32_array,
+  napi_float32_array,
+  napi_float64_array,
+  napi_bigint64_array,
+  napi_biguint64_array,
+} napi_typedarray_type;
 
 NAPI_INLINABLE napi_status
 napi_open_handle_scope (napi_env env, napi_handle_scope *result) {
@@ -135,8 +151,38 @@ napi_create_string_utf8 (napi_env env, const char *str, size_t len, napi_value *
 }
 
 NAPI_INLINABLE napi_status
+napi_create_object (napi_env env, napi_value *result) {
+  js_create_object(env, result);
+  return napi_ok;
+}
+
+NAPI_INLINABLE napi_status
 napi_create_function (napi_env env, const char *name, size_t len, napi_callback cb, void *data, napi_value *result) {
   js_create_function(env, name, len, cb, data, result);
+  return napi_ok;
+}
+
+NAPI_INLINABLE napi_status
+napi_create_external (napi_env env, void *data, napi_finalize finalize_cb, void *finalize_hint, napi_value *result) {
+  js_create_external(env, data, finalize_cb, finalize_hint, result);
+  return napi_ok;
+}
+
+NAPI_INLINABLE napi_status
+napi_create_promise (napi_env env, napi_deferred *deferred, napi_value *promise) {
+  js_create_promise(env, deferred, promise);
+  return napi_ok;
+}
+
+NAPI_INLINABLE napi_status
+napi_resolve_deferred (napi_env env, napi_deferred deferred, napi_value resolution) {
+  js_resolve_deferred(env, deferred, resolution);
+  return napi_ok;
+}
+
+NAPI_INLINABLE napi_status
+napi_reject_deferred (napi_env env, napi_deferred deferred, napi_value resolution) {
+  js_reject_deferred(env, deferred, resolution);
   return napi_ok;
 }
 
@@ -183,8 +229,56 @@ napi_get_value_string_utf8 (napi_env env, napi_value value, char *str, size_t le
 }
 
 NAPI_INLINABLE napi_status
+napi_get_value_external (napi_env env, napi_value value, void **result) {
+  js_get_value_external(env, value, result);
+  return napi_ok;
+}
+
+NAPI_INLINABLE napi_status
+napi_get_named_property (napi_env env, napi_value object, const char *name, napi_value *result) {
+  js_get_named_property(env, object, name, result);
+  return napi_ok;
+}
+
+NAPI_INLINABLE napi_status
+napi_set_named_property (napi_env env, napi_value object, const char *name, napi_value value) {
+  js_set_named_property(env, object, name, value);
+  return napi_ok;
+}
+
+NAPI_INLINABLE napi_status
 napi_call_function (napi_env env, napi_value recv, napi_value fn, size_t argc, const napi_value argv[], napi_value *result) {
   js_call_function(env, recv, fn, argc, argv, result);
+  return napi_ok;
+}
+
+NAPI_INLINABLE napi_status
+napi_make_callback (napi_env env, napi_value recv, napi_value fn, size_t argc, const napi_value argv[], napi_value *result) {
+  js_make_callback(env, recv, fn, argc, argv, result);
+  return napi_ok;
+}
+
+NAPI_INLINABLE napi_status
+napi_get_callback_info (napi_env env, napi_callback_info info, size_t *argc, napi_value argv[], napi_value *self, void **data) {
+  js_get_callback_info(env, info, argc, argv, self, data);
+  return napi_ok;
+}
+
+NAPI_INLINABLE napi_status
+napi_get_arraybuffer_info (napi_env env, napi_value arraybuffer, void **data, size_t *len) {
+  js_get_arraybuffer_info(env, arraybuffer, data, len);
+  return napi_ok;
+}
+
+NAPI_INLINABLE napi_status
+napi_get_typedarray_info (napi_env env, napi_value typedarray, napi_typedarray_type *type, size_t *len, void **data, napi_value *arraybuffer, size_t *offset) {
+  js_get_typedarray_info(env, typedarray, (js_typedarray_type_t *) type, len, data, arraybuffer, offset);
+  return napi_ok;
+}
+
+NAPI_INLINABLE napi_status
+napi_get_dataview_info (napi_env env, napi_value dataview, size_t *len, void **data, napi_value *arraybuffer, size_t *offset) {
+  js_get_dataview_info(env, dataview, len, data, arraybuffer, offset);
   return napi_ok;
 }
 

@@ -43,7 +43,22 @@ extern napi_status
 napi_create_string_utf8 (napi_env env, const char *str, size_t len, napi_value *result);
 
 extern napi_status
+napi_create_object (napi_env env, napi_value *result);
+
+extern napi_status
 napi_create_function (napi_env env, const char *name, size_t len, napi_callback cb, void *data, napi_value *result);
+
+extern napi_status
+napi_create_external (napi_env env, void *data, napi_finalize finalize_cb, void *finalize_hint, napi_value *result);
+
+extern napi_status
+napi_create_promise (napi_env env, napi_deferred *deferred, napi_value *promise);
+
+extern napi_status
+napi_resolve_deferred (napi_env env, napi_deferred deferred, napi_value resolution);
+
+extern napi_status
+napi_reject_deferred (napi_env env, napi_deferred deferred, napi_value resolution);
 
 extern napi_status
 napi_get_global (napi_env env, napi_value *result);
@@ -67,7 +82,31 @@ extern napi_status
 napi_get_value_string_utf8 (napi_env env, napi_value value, char *str, size_t len, size_t *result);
 
 extern napi_status
+napi_get_value_external (napi_env env, napi_value value, void **result);
+
+extern napi_status
+napi_get_named_property (napi_env env, napi_value object, const char *name, napi_value *result);
+
+extern napi_status
+napi_set_named_property (napi_env env, napi_value object, const char *name, napi_value value);
+
+extern napi_status
 napi_call_function (napi_env env, napi_value recv, napi_value fn, size_t argc, const napi_value argv[], napi_value *result);
+
+extern napi_status
+napi_make_callback (napi_env env, napi_value recv, napi_value fn, size_t argc, const napi_value argv[], napi_value *result);
+
+extern napi_status
+napi_get_callback_info (napi_env env, napi_callback_info info, size_t *argc, napi_value argv[], napi_value *self, void **data);
+
+extern napi_status
+napi_get_arraybuffer_info (napi_env env, napi_value arraybuffer, void **data, size_t *len);
+
+extern napi_status
+napi_get_typedarray_info (napi_env env, napi_value typedarray, napi_typedarray_type *type, size_t *len, void **data, napi_value *arraybuffer, size_t *offset);
+
+extern napi_status
+napi_get_dataview_info (napi_env env, napi_value dataview, size_t *len, void **data, napi_value *arraybuffer, size_t *offset);
 
 extern napi_status
 napi_throw (napi_env env, napi_value error);
