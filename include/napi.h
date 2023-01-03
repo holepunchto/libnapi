@@ -296,8 +296,8 @@ napi_throw (napi_env env, napi_value error) {
 }
 
 NAPI_INLINABLE napi_status
-napi_throw_error (napi_env env, const char *code, const char *msg) {
-  // TODO
+napi_throw_error (napi_env env, const char *code, const char *message) {
+  js_throw_error(env, code, message);
   return napi_ok;
 }
 
@@ -309,13 +309,13 @@ napi_get_uv_event_loop (napi_env env, uv_loop_t **loop) {
 
 NAPI_INLINABLE napi_status
 napi_get_and_clear_last_exception (napi_env env, napi_value *result) {
-  // TODO
+  js_get_and_clear_last_exception(env, result);
   return napi_ok;
 }
 
 NAPI_INLINABLE napi_status
-napi_fatal_exception (napi_env env, napi_value err) {
-  // TODO
+napi_fatal_exception (napi_env env, napi_value error) {
+  js_fatal_exception(env, error);
   return napi_ok;
 }
 
