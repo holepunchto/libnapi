@@ -68,6 +68,12 @@ typedef enum {
 } napi_typedarray_type;
 
 NAPI_INLINABLE napi_status
+napi_get_uv_event_loop (napi_env env, uv_loop_t **loop) {
+  int err = js_get_env_loop(env, loop);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
 napi_open_handle_scope (napi_env env, napi_handle_scope *result) {
   int err = js_open_handle_scope(env, result);
   return err == 0 ? napi_ok : napi_pending_exception;
@@ -298,12 +304,6 @@ napi_throw (napi_env env, napi_value error) {
 NAPI_INLINABLE napi_status
 napi_throw_error (napi_env env, const char *code, const char *message) {
   int err = js_throw_error(env, code, message);
-  return err == 0 ? napi_ok : napi_pending_exception;
-}
-
-NAPI_INLINABLE napi_status
-napi_get_uv_event_loop (napi_env env, uv_loop_t **loop) {
-  int err = js_get_env_loop(env, loop);
   return err == 0 ? napi_ok : napi_pending_exception;
 }
 

@@ -1,6 +1,9 @@
 #include "../include/napi.h"
 
 extern napi_status
+napi_get_uv_event_loop (napi_env env, uv_loop_t **loop);
+
+extern napi_status
 napi_open_handle_scope (napi_env env, napi_handle_scope *result);
 
 extern napi_status
@@ -116,9 +119,6 @@ napi_throw (napi_env env, napi_value error);
 
 extern napi_status
 napi_throw_error (napi_env env, const char *code, const char *msg);
-
-extern napi_status
-napi_get_uv_event_loop (napi_env env, uv_loop_t **loop);
 
 extern napi_status
 napi_get_and_clear_last_exception (napi_env env, napi_value *result);
