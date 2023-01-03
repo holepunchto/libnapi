@@ -1,6 +1,6 @@
 # libnapi
 
-Node-API compatibility layer for https://github.com/holepunchto/libjs.
+Node-API compatibility layer for https://github.com/holepunchto/libjs. It maintains ABI compatibility with a subset of the Node-API symbols, documented at https://nodejs.org/api/n-api.html; support for the entire set of Node-API symbols is, at least for the present, a non-goal.
 
 ## Inlining
 
