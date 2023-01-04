@@ -279,19 +279,19 @@ napi_get_arraybuffer_info (napi_env env, napi_value arraybuffer, void **data, si
 
 NAPI_INLINABLE napi_status
 napi_get_typedarray_info (napi_env env, napi_value typedarray, napi_typedarray_type *type, size_t *len, void **data, napi_value *arraybuffer, size_t *offset) {
-  int err = js_get_typedarray_info(env, typedarray, (js_typedarray_type_t *) type, len, data, arraybuffer, offset);
+  int err = js_get_typedarray_info(env, typedarray, (js_typedarray_type_t *) type, data, len, arraybuffer, offset);
   return err == 0 ? napi_ok : napi_pending_exception;
 }
 
 NAPI_INLINABLE napi_status
 napi_get_buffer_info (napi_env env, napi_value buffer, void **data, size_t *len) {
-  int err = js_get_typedarray_info(env, buffer, NULL, len, data, NULL, NULL);
+  int err = js_get_typedarray_info(env, buffer, NULL, data, len, NULL, NULL);
   return err == 0 ? napi_ok : napi_pending_exception;
 }
 
 NAPI_INLINABLE napi_status
 napi_get_dataview_info (napi_env env, napi_value dataview, size_t *len, void **data, napi_value *arraybuffer, size_t *offset) {
-  int err = js_get_dataview_info(env, dataview, len, data, arraybuffer, offset);
+  int err = js_get_dataview_info(env, dataview, data, len, arraybuffer, offset);
   return err == 0 ? napi_ok : napi_pending_exception;
 }
 
