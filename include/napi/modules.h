@@ -53,7 +53,7 @@ typedef struct napi_module {
   void *reserved[4];
 } napi_module;
 
-void
+extern void
 napi_module_register (napi_module *mod);
 
 #endif // NAPI_MODULES_H
