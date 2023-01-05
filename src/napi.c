@@ -67,10 +67,10 @@ extern napi_status
 napi_get_global (napi_env env, napi_value *result);
 
 extern napi_status
-napi_get_null (napi_env env, napi_value *result);
+napi_get_undefined (napi_env env, napi_value *result);
 
 extern napi_status
-napi_get_undefined (napi_env env, napi_value *result);
+napi_get_null (napi_env env, napi_value *result);
 
 extern napi_status
 napi_get_boolean (napi_env env, bool value, napi_value *result);

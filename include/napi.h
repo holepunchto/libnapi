@@ -200,14 +200,14 @@ napi_get_global (napi_env env, napi_value *result) {
 }
 
 NAPI_INLINABLE napi_status
-napi_get_null (napi_env env, napi_value *result) {
-  int err = js_get_null(env, result);
+napi_get_undefined (napi_env env, napi_value *result) {
+  int err = js_get_undefined(env, result);
   return err == 0 ? napi_ok : napi_pending_exception;
 }
 
 NAPI_INLINABLE napi_status
-napi_get_undefined (napi_env env, napi_value *result) {
-  int err = js_get_undefined(env, result);
+napi_get_null (napi_env env, napi_value *result) {
+  int err = js_get_null(env, result);
   return err == 0 ? napi_ok : napi_pending_exception;
 }
 
