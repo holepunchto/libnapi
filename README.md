@@ -2,11 +2,15 @@
 
 Node-API compatibility layer for https://github.com/holepunchto/libjs. It maintains ABI compatibility with a subset of the Node-API symbols, documented at https://nodejs.org/api/n-api.html; support for the entire set of Node-API symbols is, at least for the present, a non-goal.
 
-## Exceptions
+## API
+
+See [`include/napi.h`](include/napi.h) for the public API.
+
+### Exceptions
 
 Unlike the Node-API implementation in Node.js, the compatibility layer relies exclusively on JavaScript exceptions for error handling. The only possible return values for an API call is therefore `napi_ok` and `napi_pending_exception`. In case of the latter, make sure to call `napi_get_and_clear_last_exception()` to recover from the error if possible. The error may be rethrown with `napi_throw()`.
 
-## Inlining
+### Inlining
 
 When compiling for a runtime where the Node-API compatibility layer is unnecessary, the compatibility layer may be inlined by defining `NAPI_INLINE` before including `napi.h`, after which the underlying engine calls will be made directly:
 
@@ -16,7 +20,7 @@ When compiling for a runtime where the Node-API compatibility layer is unnecessa
 #include <napi.h>
 ```
 
-## Modules
+### Modules
 
 Node-API module support is provided by the [`include/napi/modules.h`](include/napi/modules.h) header and depends on the runtime providing an implementation of the `napi_module_register()` function:
 
@@ -28,10 +32,6 @@ napi_module_register (napi_module *mod) {
   // Do something with `mod`.
 }
 ```
-
-## API
-
-See [`include/napi.h`](include/napi.h) for the public API.
 
 ## License
 
