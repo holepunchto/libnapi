@@ -54,6 +54,19 @@ typedef enum {
 } napi_status;
 
 typedef enum {
+  napi_undefined,
+  napi_null,
+  napi_boolean,
+  napi_number,
+  napi_string,
+  napi_symbol,
+  napi_object,
+  napi_function,
+  napi_external,
+  napi_bigint,
+} napi_valuetype;
+
+typedef enum {
   napi_int8_array,
   napi_uint8_array,
   napi_uint8_clamped_array,
@@ -140,6 +153,24 @@ napi_get_reference_value (napi_env env, napi_ref ref, napi_value *result) {
 }
 
 NAPI_INLINABLE napi_status
+napi_wrap (napi_env env, napi_value object, void *data, napi_finalize finalize_cb, void *finalize_hint, napi_ref *result) {
+  int err = js_wrap(env, object, data, finalize_cb, finalize_hint, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_unwrap (napi_env env, napi_value object, void **result) {
+  int err = js_unwrap(env, object, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_remove_wrap (napi_env env, napi_value object, void **result) {
+  int err = napi_remove_wrap(env, object, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
 napi_create_int32 (napi_env env, int32_t value, napi_value *result) {
   int err = js_create_int32(env, value, result);
   return err == 0 ? napi_ok : napi_pending_exception;
@@ -152,8 +183,38 @@ napi_create_uint32 (napi_env env, uint32_t value, napi_value *result) {
 }
 
 NAPI_INLINABLE napi_status
+napi_create_int64 (napi_env env, int64_t value, napi_value *result) {
+  int err = js_create_int64(env, value, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_create_double (napi_env env, double value, napi_value *result) {
+  int err = js_create_double(env, value, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_create_bigint_int64 (napi_env env, int64_t value, napi_value *result) {
+  int err = js_create_bigint_int64(env, value, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_create_bigint_uint64 (napi_env env, uint64_t value, napi_value *result) {
+  int err = js_create_bigint_uint64(env, value, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
 napi_create_string_utf8 (napi_env env, const char *str, size_t len, napi_value *result) {
   int err = js_create_string_utf8(env, str, len, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_create_symbol (napi_env env, napi_value description, napi_value *result) {
+  int err = js_create_symbol(env, description, result);
   return err == 0 ? napi_ok : napi_pending_exception;
 }
 
@@ -170,8 +231,44 @@ napi_create_function (napi_env env, const char *name, size_t len, napi_callback 
 }
 
 NAPI_INLINABLE napi_status
+napi_create_array (napi_env env, napi_value *result) {
+  int err = js_create_array(env, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_create_array_with_length (napi_env env, size_t len, napi_value *result) {
+  int err = js_create_array_with_length(env, len, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
 napi_create_external (napi_env env, void *data, napi_finalize finalize_cb, void *finalize_hint, napi_value *result) {
   int err = js_create_external(env, data, finalize_cb, finalize_hint, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_create_date (napi_env env, double time, napi_value *result) {
+  int err = js_create_date(env, time, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_create_error (napi_env env, napi_value code, napi_value message, napi_value *result) {
+  int err = js_create_error(env, code, message, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_create_type_error (napi_env env, napi_value code, napi_value message, napi_value *result) {
+  int err = js_create_type_error(env, code, message, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_create_range_error (napi_env env, napi_value code, napi_value message, napi_value *result) {
+  int err = js_create_range_error(env, code, message, result);
   return err == 0 ? napi_ok : napi_pending_exception;
 }
 
@@ -190,6 +287,129 @@ napi_resolve_deferred (napi_env env, napi_deferred deferred, napi_value resoluti
 NAPI_INLINABLE napi_status
 napi_reject_deferred (napi_env env, napi_deferred deferred, napi_value resolution) {
   int err = js_reject_deferred(env, deferred, resolution);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_create_arraybuffer (napi_env env, size_t len, void **data, napi_value *result) {
+  int err = js_create_arraybuffer(env, len, data, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_create_external_arraybuffer (napi_env env, void *data, size_t len, napi_finalize finalize_cb, void *finalize_hint, napi_value *result) {
+  int err = js_create_external_arraybuffer(env, data, len, finalize_cb, finalize_hint, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_create_external_buffer (napi_env env, void *data, size_t len, napi_finalize finalize_cb, void *finalize_hint, napi_value *result) {
+  return napi_create_external_arraybuffer(env, data, len, finalize_cb, finalize_hint, result);
+}
+
+NAPI_INLINABLE napi_status
+napi_detach_arraybuffer (napi_env env, napi_value arraybuffer) {
+  int err = js_detach_arraybuffer(env, arraybuffer);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_create_typedarray (napi_env env, napi_typedarray_type type, size_t len, napi_value arraybuffer, size_t offset, napi_value *result) {
+  int err = js_create_typedarray(env, (napi_typedarray_type) type, len, arraybuffer, offset, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_create_buffer (napi_env env, size_t len, void **data, napi_value *result) {
+  js_value_t *arraybuffer;
+
+  int err = js_create_arraybuffer(env, len, data, &arraybuffer);
+  if (err < 0) return napi_pending_exception;
+
+  int err = js_create_typedarray(env, js_uint8_array, len, arraybuffer, 0, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_create_dataview (napi_env env, size_t len, napi_value arraybuffer, size_t offset, napi_value *result) {
+  int err = js_create_dataview(env, len, arraybuffer, offset, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_typeof (napi_env env, napi_value value, napi_valuetype *result) {
+  int err = js_typeof(env, value, (js_value_type_t *) result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_is_array (napi_env env, napi_value value, bool *result) {
+  int err = js_is_array(env, value, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_is_date (napi_env env, napi_value value, bool *result) {
+  int err = js_is_date(env, value, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_is_error (napi_env env, napi_value value, bool *result) {
+  int err = js_is_error(env, value, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_is_promise (napi_env env, napi_value value, bool *result) {
+  int err = js_is_promise(env, value, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_is_arraybuffer (napi_env env, napi_value value, bool *result) {
+  int err = js_is_arraybuffer(env, value, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_is_detached_arraybuffer (napi_env env, napi_value value, bool *result) {
+  int err = js_is_detahced_arraybuffer(env, value, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_is_typedarray (napi_env env, napi_value value, bool *result) {
+  int err = js_is_typedarray(env, value, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_is_buffer (napi_env env, napi_value value, bool *result) {
+  int err = js_is_typedarray(env, value, result);
+  if (err < 0) return napi_pending_exception;
+
+  if (!*result) return napi_ok;
+
+  js_typedarray_type_t type;
+
+  int err = js_get_typedarray_info(env, value, &type, NULL, NULL, NULL, NULL);
+  if (err < 0) return napi_pending_exception;
+
+  *result = type == js_uint8_array;
+
+  return 0;
+}
+
+NAPI_INLINABLE napi_status
+napi_is_dataview (napi_env env, napi_value value, bool *result) {
+  int err = js_is_dataview(env, value, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_strict_equals (napi_env env, napi_value a, napi_value b, bool *result) {
+  int err = js_strict_equals(env, a, b, result);
   return err == 0 ? napi_ok : napi_pending_exception;
 }
 
@@ -218,6 +438,12 @@ napi_get_boolean (napi_env env, bool value, napi_value *result) {
 }
 
 NAPI_INLINABLE napi_status
+napi_get_value_bool (napi_env env, napi_value value, bool *result) {
+  int err = js_get_value_bool(env, value, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
 napi_get_value_int32 (napi_env env, napi_value value, int32_t *result) {
   int err = js_get_value_int32(env, value, result);
   return err == 0 ? napi_ok : napi_pending_exception;
@@ -226,6 +452,30 @@ napi_get_value_int32 (napi_env env, napi_value value, int32_t *result) {
 NAPI_INLINABLE napi_status
 napi_get_value_uint32 (napi_env env, napi_value value, uint32_t *result) {
   int err = js_get_value_uint32(env, value, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_get_value_int64 (napi_env env, napi_value value, int64_t *result) {
+  int err = js_get_value_int64(env, value, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_get_value_double (napi_env env, napi_value value, double *result) {
+  int err = js_get_value_double(env, value, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_get_value_bigint_int64 (napi_env env, napi_value value, int64_t *result) {
+  int err = js_get_value_bigint_int64(env, value, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_get_value_bigint_uint64 (napi_env env, napi_value value, uint64_t *result) {
+  int err = js_get_value_bigint_uint64(env, value, result);
   return err == 0 ? napi_ok : napi_pending_exception;
 }
 
@@ -242,8 +492,50 @@ napi_get_value_external (napi_env env, napi_value value, void **result) {
 }
 
 NAPI_INLINABLE napi_status
+napi_get_value_date (napi_env env, napi_value value, double *result) {
+  int err = js_get_value_date(env, value, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_get_array_length (napi_env env, napi_value value, uint32_t *result) {
+  int err = js_get_array_length(env, value, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_get_property (napi_env env, napi_value object, napi_value key, napi_value *result) {
+  int err = js_get_property(env, object, key, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_has_property (napi_env env, napi_value object, napi_value key, bool *result) {
+  int err = js_has_property(env, object, key, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_set_property (napi_env env, napi_value object, napi_value key, napi_value value) {
+  int err = js_set_property(env, object, key, value);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_delete_property (napi_env env, napi_value object, napi_value key, bool *result) {
+  int err = js_delete_property(env, object, key, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
 napi_get_named_property (napi_env env, napi_value object, const char *name, napi_value *result) {
   int err = js_get_named_property(env, object, name, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_has_named_property (napi_env env, napi_value object, const char *name, bool *result) {
+  int err = js_has_named_property(env, object, name, result);
   return err == 0 ? napi_ok : napi_pending_exception;
 }
 
@@ -254,14 +546,26 @@ napi_set_named_property (napi_env env, napi_value object, const char *name, napi
 }
 
 NAPI_INLINABLE napi_status
-napi_call_function (napi_env env, napi_value recv, napi_value fn, size_t argc, const napi_value argv[], napi_value *result) {
-  int err = js_call_function(env, recv, fn, argc, argv, result);
+napi_get_element (napi_env env, napi_value object, uint32_t index, napi_value *result) {
+  int err = js_get_element(env, object, index, result);
   return err == 0 ? napi_ok : napi_pending_exception;
 }
 
 NAPI_INLINABLE napi_status
-napi_make_callback (napi_env env, napi_async_context async_hook, napi_value recv, napi_value fn, size_t argc, const napi_value argv[], napi_value *result) {
-  int err = js_make_callback(env, recv, fn, argc, argv, result);
+napi_has_element (napi_env env, napi_value object, uint32_t index, bool *result) {
+  int err = js_has_element(env, object, index, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_set_element (napi_env env, napi_value object, uint32_t index, napi_value value) {
+  int err = js_set_element(env, object, index, value);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_delete_element (napi_env env, napi_value object, uint32_t index, bool *result) {
+  int err = js_delete_element(env, object, index, result);
   return err == 0 ? napi_ok : napi_pending_exception;
 }
 
@@ -296,6 +600,18 @@ napi_get_dataview_info (napi_env env, napi_value dataview, size_t *len, void **d
 }
 
 NAPI_INLINABLE napi_status
+napi_call_function (napi_env env, napi_value recv, napi_value fn, size_t argc, const napi_value argv[], napi_value *result) {
+  int err = js_call_function(env, recv, fn, argc, argv, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_make_callback (napi_env env, napi_async_context async_hook, napi_value recv, napi_value fn, size_t argc, const napi_value argv[], napi_value *result) {
+  int err = js_make_callback(env, recv, fn, argc, argv, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
 napi_throw (napi_env env, napi_value error) {
   int err = js_throw(env, error);
   return err == 0 ? napi_ok : napi_pending_exception;
@@ -308,6 +624,24 @@ napi_throw_error (napi_env env, const char *code, const char *message) {
 }
 
 NAPI_INLINABLE napi_status
+napi_throw_type_error (napi_env env, const char *code, const char *message) {
+  int err = js_throw_type_error(env, code, message);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_throw_range_error (napi_env env, const char *code, const char *message) {
+  int err = js_throw_range_error(env, code, message);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_is_exception_pending (napi_env env, bool *result) {
+  int err = js_is_exception_pending(env, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
 napi_get_and_clear_last_exception (napi_env env, napi_value *result) {
   int err = js_get_and_clear_last_exception(env, result);
   return err == 0 ? napi_ok : napi_pending_exception;
@@ -316,6 +650,12 @@ napi_get_and_clear_last_exception (napi_env env, napi_value *result) {
 NAPI_INLINABLE napi_status
 napi_fatal_exception (napi_env env, napi_value error) {
   int err = js_fatal_exception(env, error);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_adjust_external_memory (napi_env env, int64_t change_in_bytes, int64_t *result) {
+  int err = js_adjust_external_memory(env, change_in_bytes, result);
   return err == 0 ? napi_ok : napi_pending_exception;
 }
 
