@@ -315,7 +315,7 @@ napi_detach_arraybuffer (napi_env env, napi_value arraybuffer) {
 
 NAPI_INLINABLE napi_status
 napi_create_typedarray (napi_env env, napi_typedarray_type type, size_t len, napi_value arraybuffer, size_t offset, napi_value *result) {
-  int err = js_create_typedarray(env, (napi_typedarray_type) type, len, arraybuffer, offset, result);
+  int err = js_create_typedarray(env, (js_typedarray_type_t) type, len, arraybuffer, offset, result);
   return err == 0 ? napi_ok : napi_pending_exception;
 }
 
@@ -326,7 +326,7 @@ napi_create_buffer (napi_env env, size_t len, void **data, napi_value *result) {
   int err = js_create_arraybuffer(env, len, data, &arraybuffer);
   if (err < 0) return napi_pending_exception;
 
-  int err = js_create_typedarray(env, js_uint8_array, len, arraybuffer, 0, result);
+  err = js_create_typedarray(env, js_uint8_array, len, arraybuffer, 0, result);
   return err == 0 ? napi_ok : napi_pending_exception;
 }
 
@@ -374,7 +374,7 @@ napi_is_arraybuffer (napi_env env, napi_value value, bool *result) {
 
 NAPI_INLINABLE napi_status
 napi_is_detached_arraybuffer (napi_env env, napi_value value, bool *result) {
-  int err = js_is_detahced_arraybuffer(env, value, result);
+  int err = js_is_detached_arraybuffer(env, value, result);
   return err == 0 ? napi_ok : napi_pending_exception;
 }
 
@@ -393,7 +393,7 @@ napi_is_buffer (napi_env env, napi_value value, bool *result) {
 
   js_typedarray_type_t type;
 
-  int err = js_get_typedarray_info(env, value, &type, NULL, NULL, NULL, NULL);
+  err = js_get_typedarray_info(env, value, &type, NULL, NULL, NULL, NULL);
   if (err < 0) return napi_pending_exception;
 
   *result = type == js_uint8_array;
