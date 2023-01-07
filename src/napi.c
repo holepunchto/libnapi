@@ -1,5 +1,17 @@
 #include "../include/napi.h"
 
+extern js_value_type_t
+napi_convert_from_valuetype (napi_valuetype type);
+
+extern napi_valuetype
+napi_convert_to_valuetype (js_value_type_t type);
+
+extern js_typedarray_type_t
+napi_convert_from_typedarray_type (napi_typedarray_type type);
+
+extern napi_typedarray_type
+napi_convert_to_typedarray_type (js_typedarray_type_t type);
+
 extern napi_status
 napi_get_uv_event_loop (napi_env env, uv_loop_t **loop);
 

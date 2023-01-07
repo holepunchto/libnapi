@@ -80,6 +80,114 @@ typedef enum {
   napi_biguint64_array,
 } napi_typedarray_type;
 
+NAPI_INLINABLE js_value_type_t
+napi_convert_from_valuetype (napi_valuetype type) {
+  switch (type) {
+  case napi_undefined:
+    return js_undefined;
+  case napi_null:
+    return js_null;
+  case napi_boolean:
+    return js_boolean;
+  case napi_number:
+    return js_number;
+  case napi_string:
+    return js_string;
+  case napi_symbol:
+    return js_symbol;
+  case napi_object:
+    return js_object;
+  case napi_function:
+    return js_function;
+  case napi_external:
+    return js_external;
+  case napi_bigint:
+    return js_bigint;
+  }
+}
+
+NAPI_INLINABLE napi_valuetype
+napi_convert_to_valuetype (js_value_type_t type) {
+  switch (type) {
+  case js_undefined:
+    return napi_undefined;
+  case js_null:
+    return napi_null;
+  case js_boolean:
+    return napi_boolean;
+  case js_number:
+    return napi_number;
+  case js_string:
+    return napi_string;
+  case js_symbol:
+    return napi_symbol;
+  case js_object:
+    return napi_object;
+  case js_function:
+    return napi_function;
+  case js_external:
+    return napi_external;
+  case js_bigint:
+    return napi_bigint;
+  }
+}
+
+NAPI_INLINABLE js_typedarray_type_t
+napi_convert_from_typedarray_type (napi_typedarray_type type) {
+  switch (type) {
+  case napi_int8_array:
+    return js_int8_array;
+  case napi_uint8_array:
+    return js_uint8_array;
+  case napi_uint8_clamped_array:
+    return js_uint8_clamped_array;
+  case napi_int16_array:
+    return js_int16_array;
+  case napi_uint16_array:
+    return js_uint16_array;
+  case napi_int32_array:
+    return js_int32_array;
+  case napi_uint32_array:
+    return js_uint32_array;
+  case napi_float32_array:
+    return js_float32_array;
+  case napi_float64_array:
+    return js_float64_array;
+  case napi_bigint64_array:
+    return js_bigint64_array;
+  case napi_biguint64_array:
+    return js_biguint64_array;
+  }
+}
+
+NAPI_INLINABLE napi_typedarray_type
+napi_convert_to_typedarray_type (js_typedarray_type_t type) {
+  switch (type) {
+  case js_int8_array:
+    return napi_int8_array;
+  case js_uint8_array:
+    return napi_uint8_array;
+  case js_uint8_clamped_array:
+    return napi_uint8_clamped_array;
+  case js_int16_array:
+    return napi_int16_array;
+  case js_uint16_array:
+    return napi_uint16_array;
+  case js_int32_array:
+    return napi_int32_array;
+  case js_uint32_array:
+    return napi_uint32_array;
+  case js_float32_array:
+    return napi_float32_array;
+  case js_float64_array:
+    return napi_float64_array;
+  case js_bigint64_array:
+    return napi_bigint64_array;
+  case js_biguint64_array:
+    return napi_biguint64_array;
+  }
+}
+
 NAPI_INLINABLE napi_status
 napi_get_uv_event_loop (napi_env env, uv_loop_t **loop) {
   int err = js_get_env_loop(env, loop);
@@ -315,7 +423,9 @@ napi_detach_arraybuffer (napi_env env, napi_value arraybuffer) {
 
 NAPI_INLINABLE napi_status
 napi_create_typedarray (napi_env env, napi_typedarray_type type, size_t len, napi_value arraybuffer, size_t offset, napi_value *result) {
-  int err = js_create_typedarray(env, (js_typedarray_type_t) type, len, arraybuffer, offset, result);
+  js_typedarray_type_t js_type = napi_convert_from_typedarray_type(type);
+
+  int err = js_create_typedarray(env, js_type, len, arraybuffer, offset, result);
   return err == 0 ? napi_ok : napi_pending_exception;
 }
 
@@ -338,8 +448,14 @@ napi_create_dataview (napi_env env, size_t len, napi_value arraybuffer, size_t o
 
 NAPI_INLINABLE napi_status
 napi_typeof (napi_env env, napi_value value, napi_valuetype *result) {
-  int err = js_typeof(env, value, (js_value_type_t *) result);
-  return err == 0 ? napi_ok : napi_pending_exception;
+  js_value_type_t js_type;
+
+  int err = js_typeof(env, value, &js_type);
+  if (err < 0) return napi_pending_exception;
+
+  *result = napi_convert_to_valuetype(js_type);
+
+  return 0;
 }
 
 NAPI_INLINABLE napi_status
@@ -583,8 +699,16 @@ napi_get_arraybuffer_info (napi_env env, napi_value arraybuffer, void **data, si
 
 NAPI_INLINABLE napi_status
 napi_get_typedarray_info (napi_env env, napi_value typedarray, napi_typedarray_type *type, size_t *len, void **data, napi_value *arraybuffer, size_t *offset) {
-  int err = js_get_typedarray_info(env, typedarray, (js_typedarray_type_t *) type, data, len, arraybuffer, offset);
-  return err == 0 ? napi_ok : napi_pending_exception;
+  js_typedarray_type_t js_type;
+
+  int err = js_get_typedarray_info(env, typedarray, type == NULL ? NULL : &js_type, data, len, arraybuffer, offset);
+  if (err < 0) return napi_pending_exception;
+
+  if (type != NULL) {
+    *type = napi_convert_to_typedarray_type(js_type);
+  }
+
+  return 0;
 }
 
 NAPI_INLINABLE napi_status
