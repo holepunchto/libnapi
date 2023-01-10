@@ -276,7 +276,7 @@ napi_unwrap (napi_env env, napi_value object, void **result) {
 
 NAPI_INLINABLE napi_status
 napi_remove_wrap (napi_env env, napi_value object, void **result) {
-  int err = napi_remove_wrap(env, object, result);
+  int err = js_remove_wrap(env, object, result);
   return err == 0 ? napi_ok : napi_pending_exception;
 }
 
