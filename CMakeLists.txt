@@ -59,12 +59,6 @@ set_target_properties(
   OUTPUT_NAME napi
 )
 
-target_link_libraries(
-  napi_static
-  PUBLIC
-    js_static
-)
-
 install(TARGETS napi_shared napi_static)
 
 install(FILES include/napi.h DESTINATION include)
