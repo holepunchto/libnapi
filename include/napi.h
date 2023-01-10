@@ -13,6 +13,8 @@ extern "C" {
 #define NAPI_INLINABLE
 #endif
 
+#define NAPI_AUTO_LENGTH ((size_t) -1)
+
 typedef js_env_t *napi_env;
 typedef js_value_t *napi_value;
 typedef js_handle_scope_t *napi_handle_scope;
