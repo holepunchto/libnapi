@@ -58,6 +58,9 @@ extern napi_status
 napi_remove_wrap (napi_env env, napi_value object, void **result);
 
 extern napi_status
+napi_add_finalizer (napi_env env, napi_value object, void *data, napi_finalize finalize_cb, void *finalize_hint, napi_ref *result);
+
+extern napi_status
 napi_create_int32 (napi_env env, int32_t value, napi_value *result);
 
 extern napi_status

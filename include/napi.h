@@ -285,6 +285,12 @@ napi_remove_wrap (napi_env env, napi_value object, void **result) {
 }
 
 NAPI_INLINABLE napi_status
+napi_add_finalizer (napi_env env, napi_value object, void *data, napi_finalize finalize_cb, void *finalize_hint, napi_ref *result) {
+  int err = js_add_finalizer(env, object, data, finalize_cb, finalize_hint, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
 napi_create_int32 (napi_env env, int32_t value, napi_value *result) {
   int err = js_create_int32(env, value, result);
   return err == 0 ? napi_ok : napi_pending_exception;
