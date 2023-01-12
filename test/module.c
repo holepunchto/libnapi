@@ -17,7 +17,7 @@ void
 napi_module_register (napi_module *mod) {
   register_called = true;
 
-  assert(strcmp(mod->nm_modname, "module") == 0);
+  assert(strcmp(mod->nm_modname, "foo") == 0);
   assert(strcmp(mod->nm_filename, __FILE__) == 0);
   assert(mod->nm_register_func == init);
 }
