@@ -417,17 +417,6 @@ napi_create_external_arraybuffer (napi_env env, void *data, size_t len, napi_fin
 }
 
 NAPI_INLINABLE napi_status
-napi_create_external_buffer (napi_env env, void *data, size_t len, napi_finalize finalize_cb, void *finalize_hint, napi_value *result) {
-  js_value_t *arraybuffer;
-
-  int err = js_create_external_arraybuffer(env, data, len, finalize_cb, finalize_hint, &arraybuffer);
-  if (err < 0) return napi_pending_exception;
-
-  err = js_create_typedarray(env, js_uint8_array, len, arraybuffer, 0, result);
-  return err == 0 ? napi_ok : napi_pending_exception;
-}
-
-NAPI_INLINABLE napi_status
 napi_detach_arraybuffer (napi_env env, napi_value arraybuffer) {
   int err = js_detach_arraybuffer(env, arraybuffer);
   return err == 0 ? napi_ok : napi_pending_exception;
@@ -460,6 +449,17 @@ napi_create_buffer_copy (napi_env env, size_t len, const void *data, void **resu
   if (err < 0) return napi_pending_exception;
 
   memcpy(result_data, data, len);
+
+  err = js_create_typedarray(env, js_uint8_array, len, arraybuffer, 0, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_create_external_buffer (napi_env env, void *data, size_t len, napi_finalize finalize_cb, void *finalize_hint, napi_value *result) {
+  js_value_t *arraybuffer;
+
+  int err = js_create_external_arraybuffer(env, data, len, finalize_cb, finalize_hint, &arraybuffer);
+  if (err < 0) return napi_pending_exception;
 
   err = js_create_typedarray(env, js_uint8_array, len, arraybuffer, 0, result);
   return err == 0 ? napi_ok : napi_pending_exception;
