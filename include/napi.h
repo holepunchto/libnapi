@@ -733,7 +733,7 @@ napi_call_function (napi_env env, napi_value recv, napi_value fn, size_t argc, c
 
 NAPI_INLINABLE napi_status
 napi_make_callback (napi_env env, napi_async_context async_hook, napi_value recv, napi_value fn, size_t argc, const napi_value argv[], napi_value *result) {
-  int err = js_make_callback(env, recv, fn, argc, argv, result);
+  int err = js_call_function(env, recv, fn, argc, argv, result);
   return err == 0 ? napi_ok : napi_pending_exception;
 }
 
