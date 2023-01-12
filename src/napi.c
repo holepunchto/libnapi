@@ -124,9 +124,6 @@ extern napi_status
 napi_create_external_arraybuffer (napi_env env, void *data, size_t len, napi_finalize finalize_cb, void *finalize_hint, napi_value *result);
 
 extern napi_status
-napi_create_external_buffer (napi_env env, void *data, size_t len, napi_finalize finalize_cb, void *finalize_hint, napi_value *result);
-
-extern napi_status
 napi_detach_arraybuffer (napi_env env, napi_value arraybuffer);
 
 extern napi_status
@@ -134,6 +131,12 @@ napi_create_typedarray (napi_env env, napi_typedarray_type type, size_t len, nap
 
 extern napi_status
 napi_create_buffer (napi_env env, size_t len, void **data, napi_value *result);
+
+extern napi_status
+napi_create_buffer_copy (napi_env env, size_t len, const void *data, void **result_data, napi_value *result);
+
+extern napi_status
+napi_create_external_buffer (napi_env env, void *data, size_t len, napi_finalize finalize_cb, void *finalize_hint, napi_value *result);
 
 extern napi_status
 napi_create_dataview (napi_env env, size_t len, napi_value arraybuffer, size_t offset, napi_value *result);
