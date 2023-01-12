@@ -6,6 +6,10 @@ extern "C" {
 #endif
 
 #include <js.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <string.h>
 
 #ifdef NAPI_INLINE
 #define NAPI_INLINABLE static inline
@@ -437,6 +441,19 @@ napi_create_buffer (napi_env env, size_t len, void **data, napi_value *result) {
 
   int err = js_create_arraybuffer(env, len, data, &arraybuffer);
   if (err < 0) return napi_pending_exception;
+
+  err = js_create_typedarray(env, js_uint8_array, len, arraybuffer, 0, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+NAPI_INLINABLE napi_status
+napi_create_buffer_copy (napi_env env, size_t len, const void *data, void **result_data, napi_value *result) {
+  js_value_t *arraybuffer;
+
+  int err = js_create_arraybuffer(env, len, result_data, &arraybuffer);
+  if (err < 0) return napi_pending_exception;
+
+  memcpy(result_data, data, len);
 
   err = js_create_typedarray(env, js_uint8_array, len, arraybuffer, 0, result);
   return err == 0 ? napi_ok : napi_pending_exception;
