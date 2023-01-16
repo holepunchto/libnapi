@@ -14,7 +14,7 @@ extern "C" {
 #ifdef NAPI_INLINE
 #define NAPI_INLINABLE static inline
 #else
-#define NAPI_INLINABLE
+#define NAPI_INLINABLE extern
 #endif
 
 #define NAPI_AUTO_LENGTH ((size_t) -1)
