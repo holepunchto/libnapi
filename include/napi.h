@@ -486,7 +486,7 @@ napi_typeof (napi_env env, napi_value value, napi_valuetype *result) {
 
   *result = napi_convert_to_valuetype(js_type);
 
-  return 0;
+  return napi_ok;
 }
 
 NAPI_INLINABLE napi_status
@@ -545,7 +545,7 @@ napi_is_buffer (napi_env env, napi_value value, bool *result) {
 
   *result = type == js_uint8_array;
 
-  return 0;
+  return napi_ok;
 }
 
 NAPI_INLINABLE napi_status
@@ -739,7 +739,7 @@ napi_get_typedarray_info (napi_env env, napi_value typedarray, napi_typedarray_t
     *type = napi_convert_to_typedarray_type(js_type);
   }
 
-  return 0;
+  return napi_ok;
 }
 
 NAPI_INLINABLE napi_status
