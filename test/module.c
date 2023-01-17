@@ -1,10 +1,10 @@
+#define NAPI_MODULE_FILENAME "test/module.c"
+
 #include <assert.h>
 #include <string.h>
 
 #include "../include/napi.h"
 #include "helpers.h"
-
-#define NAPI_MODULE_FILENAME "test/module.c"
 
 bool register_called = false;
 
@@ -20,7 +20,7 @@ napi_module_register (napi_module *mod) {
   register_called = true;
 
   assert(strcmp(mod->nm_modname, "foo") == 0);
-  assert(strcmp(mod->nm_filename, __FILE__) == 0);
+  assert(strcmp(mod->nm_filename, "test/module.c") == 0);
   assert(mod->nm_register_func == init);
 }
 

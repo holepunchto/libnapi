@@ -25,6 +25,10 @@
 
 #define NAPI_MODULE_VERSION 1
 
+#ifndef NAPI_MODULE_FILENAME
+#define NAPI_MODULE_FILENAME ""
+#endif
+
 #define NAPI_MODULE_NAME(name) #name
 
 #define NAPI_MODULE(name, fn) \
