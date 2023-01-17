@@ -32,7 +32,7 @@
     napi_module module = { \
       NAPI_MODULE_VERSION, \
       0, \
-      __FILE__, \
+      NAPI_MODULE_FILENAME, \
       fn, \
       NAPI_MODULE_NAME(name), \
       NULL, \

@@ -4,6 +4,8 @@
 #include "../include/napi.h"
 #include "helpers.h"
 
+#define NAPI_MODULE_FILENAME "test/module.c"
+
 bool register_called = false;
 
 static napi_value
