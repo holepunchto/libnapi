@@ -623,7 +623,11 @@ napi_get_value_bigint_uint64 (napi_env env, napi_value value, uint64_t *result) 
 inline napi_status
 napi_get_value_string_utf8 (napi_env env, napi_value value, char *str, size_t len, size_t *result) {
   int err = js_get_value_string_utf8(env, value, str, len, result);
-  return err == 0 ? napi_ok : napi_pending_exception;
+  if (err < 0) return napi_pending_exception;
+
+  if (len > 0) result[len - 1] = '\0'; // Always NULL terminate
+
+  return napi_ok;
 }
 
 inline napi_status
