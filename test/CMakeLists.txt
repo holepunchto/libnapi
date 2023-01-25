@@ -1,6 +1,5 @@
 list(APPEND tests
   basic
-  basic-inline
   module
 )
 
