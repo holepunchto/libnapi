@@ -625,7 +625,7 @@ napi_get_value_string_utf8 (napi_env env, napi_value value, char *str, size_t le
   int err = js_get_value_string_utf8(env, value, str, len > 0 ? len - 1 : 0, result);
   if (err < 0) return napi_pending_exception;
 
-  if (len > 0) result[len - 1] = '\0'; // Always NULL terminate
+  if (len > 0) str[len - 1] = '\0'; // Always NULL terminate
 
   return napi_ok;
 }
