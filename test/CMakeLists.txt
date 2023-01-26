@@ -1,5 +1,6 @@
 list(APPEND tests
   basic
+  get-value-string-utf8
   get-value-string-utf8-length
   get-value-string-utf8-truncate
   module
