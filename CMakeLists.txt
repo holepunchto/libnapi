@@ -18,7 +18,7 @@ set_target_properties(
   napi
   PROPERTIES
   C_STANDARD 99
-  POSITION_INDEPENDENT_CODE 1
+  POSITION_INDEPENDENT_CODE ON
 )
 
 target_sources(
