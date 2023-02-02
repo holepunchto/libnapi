@@ -18,7 +18,7 @@ foreach(test IN LISTS tests)
   target_include_directories(
     ${test}
     PRIVATE
-      $<TARGET_PROPERTY:napi,INCLUDE_DIRECTORIES>
+      $<TARGET_PROPERTY:napi,INTERFACE_INCLUDE_DIRECTORIES>
   )
 
   add_test(
