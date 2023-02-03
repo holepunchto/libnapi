@@ -455,7 +455,7 @@ napi_create_buffer_copy (napi_env env, size_t len, const void *data, void **resu
 }
 
 inline napi_status
-napi_create_external_buffer (napi_env env, void *data, size_t len, napi_finalize finalize_cb, void *finalize_hint, napi_value *result) {
+napi_create_external_buffer (napi_env env, size_t len, void *data, napi_finalize finalize_cb, void *finalize_hint, napi_value *result) {
   js_value_t *arraybuffer;
 
   int err = js_create_external_arraybuffer(env, data, len, finalize_cb, finalize_hint, &arraybuffer);
