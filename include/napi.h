@@ -226,7 +226,7 @@ napi_escape_handle (napi_env env, napi_escapable_handle_scope scope, napi_value 
 
 inline napi_status
 napi_run_script (napi_env env, napi_value source, napi_value *result) {
-  int err = js_run_script(env, "<anonymous>", -1, source, result);
+  int err = js_run_script(env, "<anonymous>", -1, 0, source, result);
   return err == 0 ? napi_ok : napi_pending_exception;
 }
 
