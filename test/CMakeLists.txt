@@ -26,4 +26,10 @@ foreach(test IN LISTS tests)
     COMMAND ${test}
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
   )
+
+  set_tests_properties(
+    ${test}
+    PROPERTIES
+    TIMEOUT 30
+  )
 endforeach()
