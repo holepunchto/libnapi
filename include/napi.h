@@ -533,7 +533,6 @@ napi_is_buffer (napi_env env, napi_value value, bool *result) {
   if (!*result) return napi_ok;
 
   js_typedarray_type_t type;
-
   err = js_get_typedarray_info(env, value, &type, NULL, NULL, NULL, NULL);
   if (err < 0) return napi_pending_exception;
 
@@ -715,8 +714,8 @@ napi_delete_element (napi_env env, napi_value object, uint32_t index, bool *resu
 }
 
 inline napi_status
-napi_get_cb_info (napi_env env, napi_callback_info info, size_t *argc, napi_value argv[], napi_value *self, void **data) {
-  int err = js_get_callback_info(env, info, argc, argv, self, data);
+napi_get_cb_info (napi_env env, napi_callback_info info, size_t *argc, napi_value argv[], napi_value *receiver, void **data) {
+  int err = js_get_callback_info(env, info, argc, argv, receiver, data);
   return err == 0 ? napi_ok : napi_pending_exception;
 }
 
@@ -753,14 +752,14 @@ napi_get_dataview_info (napi_env env, napi_value dataview, size_t *len, void **d
 }
 
 inline napi_status
-napi_call_function (napi_env env, napi_value recv, napi_value fn, size_t argc, const napi_value argv[], napi_value *result) {
-  int err = js_call_function(env, recv, fn, argc, argv, result);
+napi_call_function (napi_env env, napi_value receiver, napi_value function, size_t argc, const napi_value argv[], napi_value *result) {
+  int err = js_call_function(env, receiver, function, argc, argv, result);
   return err == 0 ? napi_ok : napi_pending_exception;
 }
 
 inline napi_status
-napi_make_callback (napi_env env, napi_async_context async_hook, napi_value recv, napi_value fn, size_t argc, const napi_value argv[], napi_value *result) {
-  int err = js_call_function(env, recv, fn, argc, argv, result);
+napi_make_callback (napi_env env, napi_async_context async_context, napi_value receiver, napi_value function, size_t argc, const napi_value argv[], napi_value *result) {
+  int err = js_call_function(env, receiver, function, argc, argv, result);
   return err == 0 ? napi_ok : napi_pending_exception;
 }
 
