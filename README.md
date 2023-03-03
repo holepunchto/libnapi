@@ -25,4 +25,4 @@ napi_module_register (napi_module *mod) {
 
 ## License
 
-ISC
+Apache-2.0
