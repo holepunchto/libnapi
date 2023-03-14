@@ -23,7 +23,9 @@
   static void f(void)
 #endif
 
+#ifndef NAPI_MODULE_VERSION
 #define NAPI_MODULE_VERSION 1
+#endif
 
 #ifndef NAPI_MODULE_FILENAME
 #define NAPI_MODULE_FILENAME ""
