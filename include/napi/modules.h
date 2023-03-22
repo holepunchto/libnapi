@@ -35,7 +35,7 @@
 #define NAPI_MODULE_NAME(name) #name
 
 #define NAPI_MODULE(name, fn) \
-  NAPI_INITIALIZER(module_initializer) { \
+  NAPI_INITIALIZER(module_initializer_##name) { \
     napi_module module = { \
       NAPI_MODULE_VERSION, \
       0, \
