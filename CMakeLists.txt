@@ -52,6 +52,7 @@ set_target_properties(
   napi_static
   PROPERTIES
   OUTPUT_NAME napi
+  PREFIX lib
 )
 
 target_link_libraries(
