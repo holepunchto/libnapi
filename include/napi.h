@@ -448,7 +448,7 @@ napi_create_buffer_copy (napi_env env, size_t len, const void *data, void **resu
   int err = js_create_arraybuffer(env, len, result_data, &arraybuffer);
   if (err < 0) return napi_pending_exception;
 
-  memcpy(result_data, data, len);
+  if (result_data) memcpy(result_data, data, len);
 
   err = js_create_typedarray(env, js_uint8_array, len, arraybuffer, 0, result);
   return err == 0 ? napi_ok : napi_pending_exception;
