@@ -19,7 +19,7 @@ napi_setup_env () {
   e = js_create_platform(loop, NULL, &platform);
   assert(e == 0);
 
-  e = js_create_env(loop, platform, &env);
+  e = js_create_env(loop, platform, NULL, &env);
   assert(e == 0);
 
   return env;
