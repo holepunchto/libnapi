@@ -82,6 +82,9 @@ extern napi_status
 napi_create_string_utf8 (napi_env env, const char *str, size_t len, napi_value *result);
 
 extern napi_status
+napi_create_string_utf16 (napi_env env, const char16_t *str, size_t len, napi_value *result);
+
+extern napi_status
 napi_create_symbol (napi_env env, napi_value description, napi_value *result);
 
 extern napi_status
@@ -212,6 +215,9 @@ napi_get_value_bigint_uint64 (napi_env env, napi_value value, uint64_t *result);
 
 extern napi_status
 napi_get_value_string_utf8 (napi_env env, napi_value value, char *str, size_t len, size_t *result);
+
+extern napi_status
+napi_get_value_string_utf16 (napi_env env, napi_value value, char16_t *str, size_t len, size_t *result);
 
 extern napi_status
 napi_get_value_external (napi_env env, napi_value value, void **result);
