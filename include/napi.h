@@ -619,14 +619,14 @@ napi_get_value_double (napi_env env, napi_value value, double *result) {
 }
 
 inline napi_status
-napi_get_value_bigint_int64 (napi_env env, napi_value value, int64_t *result) {
-  int err = js_get_value_bigint_int64(env, value, result);
+napi_get_value_bigint_int64 (napi_env env, napi_value value, int64_t *result, bool *lossless) {
+  int err = js_get_value_bigint_int64(env, value, result, lossless);
   return err == 0 ? napi_ok : napi_pending_exception;
 }
 
 inline napi_status
-napi_get_value_bigint_uint64 (napi_env env, napi_value value, uint64_t *result) {
-  int err = js_get_value_bigint_uint64(env, value, result);
+napi_get_value_bigint_uint64 (napi_env env, napi_value value, uint64_t *result, bool *lossless) {
+  int err = js_get_value_bigint_uint64(env, value, result, lossless);
   return err == 0 ? napi_ok : napi_pending_exception;
 }
 

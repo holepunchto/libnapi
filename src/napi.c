@@ -208,10 +208,10 @@ extern napi_status
 napi_get_value_double (napi_env env, napi_value value, double *result);
 
 extern napi_status
-napi_get_value_bigint_int64 (napi_env env, napi_value value, int64_t *result);
+napi_get_value_bigint_int64 (napi_env env, napi_value value, int64_t *result, bool *lossless);
 
 extern napi_status
-napi_get_value_bigint_uint64 (napi_env env, napi_value value, uint64_t *result);
+napi_get_value_bigint_uint64 (napi_env env, napi_value value, uint64_t *result, bool *lossless);
 
 extern napi_status
 napi_get_value_string_utf8 (napi_env env, napi_value value, char *str, size_t len, size_t *result);
