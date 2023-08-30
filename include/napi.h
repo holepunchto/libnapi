@@ -780,7 +780,7 @@ napi_call_function (napi_env env, napi_value receiver, napi_value function, size
 
 inline napi_status
 napi_make_callback (napi_env env, napi_async_context async_context, napi_value receiver, napi_value function, size_t argc, const napi_value argv[], napi_value *result) {
-  int err = js_call_function(env, receiver, function, argc, argv, result);
+  int err = js_call_function_with_checkpoint(env, receiver, function, argc, argv, result);
   return err == 0 ? napi_ok : napi_pending_exception;
 }
 
