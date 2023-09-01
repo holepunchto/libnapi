@@ -12,16 +12,18 @@ Unlike the Node-API implementation in Node.js, the compatibility layer relies ex
 
 ### Modules
 
-Node-API module support is provided by the [`include/napi/modules.h`](include/napi/modules.h) header and depends on the runtime providing an implementation of the `napi_module_register()` function:
+Node-API module support is provided by the [`include/napi/module.h`](include/napi/module.h) header and depends on the runtime providing an implementation of the `napi_module_register()` function for constructor based registration:
 
 ```c
-#include <napi/modules.h>
+#include <napi/module.h>
 
 void
 napi_module_register (napi_module *mod) {
   // Do something with `mod`.
 }
 ```
+
+For symbol based registration, the known symbol `napi_register_module_v1()` will be exported by the module.
 
 ## License
 

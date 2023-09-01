@@ -19,7 +19,7 @@ target_sources(
   napi
   INTERFACE
     include/napi.h
-    include/napi/modules.h
+    include/napi/module.h
   PRIVATE
     src/napi.c
 )

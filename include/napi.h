@@ -30,7 +30,7 @@ typedef void *napi_async_context;
 typedef napi_value (*napi_callback)(napi_env, napi_callback_info);
 typedef void (*napi_finalize)(napi_env env, void *finalize_data, void *finalize_hint);
 
-#include "napi/modules.h"
+#include "napi/module.h"
 
 typedef enum {
   napi_ok,

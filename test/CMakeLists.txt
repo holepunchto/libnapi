@@ -4,6 +4,7 @@ list(APPEND tests
   get-value-string-utf8-length
   get-value-string-utf8-truncate
   module
+  module-constructor
 )
 
 foreach(test IN LISTS tests)
