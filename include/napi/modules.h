@@ -3,10 +3,16 @@
 
 #include "../napi.h"
 
+#define NAPI_MODULE_VERSION 1
+
+#ifndef NAPI_MODULE_FILENAME
+#define NAPI_MODULE_FILENAME ""
+#endif
+
 // https://stackoverflow.com/a/2390626
 
 #if defined(__cplusplus)
-#define NAPI_INITIALIZER(f) \
+#define NAPI_MODULE_INITIALIZER(f) \
   static void f(void); \
   struct f##_ { \
     f##_(void) { f(); } \
@@ -14,28 +20,20 @@
   static void f(void)
 #elif defined(_MSC_VER)
 #pragma section(".CRT$XCU", read)
-#define NAPI_INITIALIZER(f) \
+#define NAPI_MODULE_INITIALIZER(f) \
   static void f(void); \
   __declspec(dllexport, allocate(".CRT$XCU")) void (*f##_)(void) = f; \
   static void f(void)
 #else
-#define NAPI_INITIALIZER(f) \
+#define NAPI_MODULE_INITIALIZER(f) \
   static void f(void) __attribute__((constructor)); \
   static void f(void)
-#endif
-
-#ifndef NAPI_MODULE_VERSION
-#define NAPI_MODULE_VERSION 1
-#endif
-
-#ifndef NAPI_MODULE_FILENAME
-#define NAPI_MODULE_FILENAME ""
 #endif
 
 #define NAPI_MODULE_NAME(name) #name
 
 #define NAPI_MODULE(name, fn) \
-  NAPI_INITIALIZER(module_initializer_##name) { \
+  NAPI_MODULE_INITIALIZER(module_initializer_##name) { \
     napi_module module = { \
       NAPI_MODULE_VERSION, \
       0, \
