@@ -32,7 +32,7 @@
 #define NAPI_MODULE_CONSTRUCTOR(f) \
   static void f(void); \
   __declspec(dllexport, allocate(".CRT$XCU")) void (*f##_)(void) = f; \
-  static void f(void)
+  __pragma(comment(linker, "/include:" #f "_")) static void f(void)
 #else
 #define NAPI_MODULE_CONSTRUCTOR(f) \
   static void f(void) __attribute__((constructor)); \
