@@ -1,5 +1,3 @@
-#define NAPI_MODULE_FILENAME "test/module.c"
-
 #include <assert.h>
 #include <string.h>
 
@@ -10,6 +8,8 @@ bool init_called = false;
 
 static napi_value
 init (napi_env env, napi_value exports) {
+  init_called = true;
+
   return exports;
 }
 

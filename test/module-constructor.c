@@ -1,9 +1,8 @@
 #define NAPI_MODULE_FILENAME "test/module.c"
+#define NAPI_MODULE_REGISTER_CONSTRUCTOR
 
 #include <assert.h>
 #include <string.h>
-
-#define NAPI_MODULE_REGISTER_CONSTRUCTOR
 
 #include "../include/napi.h"
 #include "helpers.h"
