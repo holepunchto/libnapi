@@ -11,6 +11,8 @@
 
 #define NAPI_MODULE_CONCAT(a, b) a##b
 
+#define NAPI_MODULE_NAME(name) #name
+
 #define NAPI_MODULE_SYMBOL_HELPER(base, version) NAPI_MODULE_CONCAT(base, version)
 
 #define NAPI_MODULE_SYMBOL_REGISTER_BASE napi_register_module_v
@@ -40,8 +42,6 @@
 #endif
 
 #ifdef NAPI_MODULE_REGISTER_CONSTRUCTOR
-
-#define NAPI_MODULE_NAME(name) #name
 
 #define NAPI_MODULE(name, fn) \
   NAPI_MODULE_CONSTRUCTOR(napi_register_module_##name) { \
