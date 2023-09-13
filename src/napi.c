@@ -61,6 +61,12 @@ extern napi_status
 napi_add_finalizer (napi_env env, napi_value object, void *data, napi_finalize finalize_cb, void *finalize_hint, napi_ref *result);
 
 extern napi_status
+napi_type_tag_object (napi_env env, napi_value object, const napi_type_tag *tag);
+
+extern napi_status
+napi_check_object_type_tag (napi_env env, napi_value object, const napi_type_tag *tag, bool *result);
+
+extern napi_status
 napi_create_int32 (napi_env env, int32_t value, napi_value *result);
 
 extern napi_status
@@ -230,6 +236,9 @@ napi_get_array_length (napi_env env, napi_value value, uint32_t *result);
 
 extern napi_status
 napi_get_property (napi_env env, napi_value object, napi_value key, napi_value *result);
+
+extern napi_status
+napi_get_property_names (napi_env env, napi_value object, napi_value *result);
 
 extern napi_status
 napi_has_property (napi_env env, napi_value object, napi_value key, bool *result);

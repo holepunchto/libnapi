@@ -9,6 +9,7 @@ extern "C" {
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <string.h>
 #include <utf.h>
 
@@ -84,6 +85,38 @@ typedef enum {
   napi_bigint64_array,
   napi_biguint64_array,
 } napi_typedarray_type;
+
+typedef enum {
+  napi_default = 0,
+  napi_writable = 1 << 0,
+  napi_enumerable = 1 << 1,
+  napi_configurable = 1 << 2,
+
+  napi_static = 1 << 10,
+
+  napi_default_method = napi_writable | napi_configurable,
+
+  napi_default_jsproperty = napi_writable | napi_enumerable | napi_configurable,
+
+} napi_property_attributes;
+
+typedef struct {
+  const char *utf8name;
+  napi_value name;
+
+  napi_callback method;
+  napi_callback getter;
+  napi_callback setter;
+  napi_value value;
+
+  napi_property_attributes attributes;
+  void *data;
+} napi_property_descriptor;
+
+typedef struct {
+  uint64_t lower;
+  uint64_t upper;
+} napi_type_tag;
 
 inline js_value_type_t
 napi_convert_from_valuetype (napi_valuetype type) {
@@ -266,6 +299,72 @@ napi_get_reference_value (napi_env env, napi_ref ref, napi_value *result) {
 }
 
 inline napi_status
+napi_define_class (napi_env env, const char *name, size_t len, napi_callback constructor, void *data, size_t properties_len, const napi_property_descriptor *properties, napi_value *result) {
+  js_property_descriptor_t *js_properties = malloc(properties_len * sizeof(js_property_descriptor_t));
+
+  for (size_t i = 0; i < properties_len; i++) {
+    if (properties[i].name) {
+      js_throw_errorf(env, NULL, "Only string literal property names are supported");
+
+      goto err;
+    }
+
+    js_properties[i] = (js_property_descriptor_t){
+      .name = properties[i].utf8name,
+      .data = properties[i].data,
+      .attributes = properties[i].attributes,
+      .method = properties[i].method,
+      .getter = properties[i].getter,
+      .setter = properties[i].setter,
+      .value = properties[i].value,
+    };
+  }
+
+  int err = js_define_class(env, name, len, constructor, data, js_properties, properties_len, result);
+  if (err < 0) goto err;
+
+  return napi_ok;
+
+err:
+  free(js_properties);
+
+  return napi_pending_exception;
+}
+
+inline napi_status
+napi_define_properties (napi_env env, napi_value object, size_t len, const napi_property_descriptor *properties) {
+  js_property_descriptor_t *js_properties = malloc(len * sizeof(js_property_descriptor_t));
+
+  for (size_t i = 0; i < len; i++) {
+    if (properties[i].name) {
+      js_throw_errorf(env, NULL, "Only string literal property names are supported");
+
+      goto err;
+    }
+
+    js_properties[i] = (js_property_descriptor_t){
+      .name = properties[i].utf8name,
+      .data = properties[i].data,
+      .attributes = properties[i].attributes,
+      .method = properties[i].method,
+      .getter = properties[i].getter,
+      .setter = properties[i].setter,
+      .value = properties[i].value,
+    };
+  }
+
+  int err = js_define_properties(env, object, js_properties, len);
+  if (err < 0) goto err;
+
+  return napi_ok;
+
+err:
+  free(js_properties);
+
+  return napi_pending_exception;
+}
+
+inline napi_status
 napi_wrap (napi_env env, napi_value object, void *data, napi_finalize finalize_cb, void *finalize_hint, napi_ref *result) {
   int err = js_wrap(env, object, data, finalize_cb, finalize_hint, result);
   return err == 0 ? napi_ok : napi_pending_exception;
@@ -286,6 +385,18 @@ napi_remove_wrap (napi_env env, napi_value object, void **result) {
 inline napi_status
 napi_add_finalizer (napi_env env, napi_value object, void *data, napi_finalize finalize_cb, void *finalize_hint, napi_ref *result) {
   int err = js_add_finalizer(env, object, data, finalize_cb, finalize_hint, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+inline napi_status
+napi_type_tag_object (napi_env env, napi_value object, const napi_type_tag *tag) {
+  int err = js_add_type_tag(env, object, &(js_type_tag_t){tag->lower, tag->upper});
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+inline napi_status
+napi_check_object_type_tag (napi_env env, napi_value object, const napi_type_tag *tag, bool *result) {
+  int err = js_check_type_tag(env, object, &(js_type_tag_t){tag->lower, tag->upper}, result);
   return err == 0 ? napi_ok : napi_pending_exception;
 }
 
@@ -665,6 +776,12 @@ napi_get_value_date (napi_env env, napi_value value, double *result) {
 inline napi_status
 napi_get_array_length (napi_env env, napi_value value, uint32_t *result) {
   int err = js_get_array_length(env, value, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+inline napi_status
+napi_get_property_names (napi_env env, napi_value object, napi_value *result) {
+  int err = js_get_property_names(env, object, result);
   return err == 0 ? napi_ok : napi_pending_exception;
 }
 
