@@ -49,6 +49,12 @@ extern napi_status
 napi_get_reference_value (napi_env env, napi_ref ref, napi_value *result);
 
 extern napi_status
+napi_define_class (napi_env env, const char *name, size_t len, napi_callback constructor, void *data, size_t properties_len, const napi_property_descriptor *properties, napi_value *result);
+
+extern napi_status
+napi_define_properties (napi_env env, napi_value object, size_t len, const napi_property_descriptor *properties);
+
+extern napi_status
 napi_wrap (napi_env env, napi_value object, void *data, napi_finalize finalize_cb, void *finalize_hint, napi_ref *result);
 
 extern napi_status
