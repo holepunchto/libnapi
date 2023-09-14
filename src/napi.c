@@ -160,6 +160,18 @@ extern napi_status
 napi_create_dataview (napi_env env, size_t len, napi_value arraybuffer, size_t offset, napi_value *result);
 
 extern napi_status
+napi_coerce_to_bool (napi_env env, napi_value value, napi_value *result);
+
+extern napi_status
+napi_coerce_to_number (napi_env env, napi_value value, napi_value *result);
+
+extern napi_status
+napi_coerce_to_string (napi_env env, napi_value value, napi_value *result);
+
+extern napi_status
+napi_coerce_to_object (napi_env env, napi_value value, napi_value *result);
+
+extern napi_status
 napi_typeof (napi_env env, napi_value value, napi_valuetype *result);
 
 extern napi_status

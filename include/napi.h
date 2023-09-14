@@ -594,6 +594,30 @@ napi_create_dataview (napi_env env, size_t len, napi_value arraybuffer, size_t o
 }
 
 inline napi_status
+napi_coerce_to_bool (napi_env env, napi_value value, napi_value *result) {
+  int err = js_coerce_to_boolean(env, value, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+inline napi_status
+napi_coerce_to_number (napi_env env, napi_value value, napi_value *result) {
+  int err = js_coerce_to_number(env, value, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+inline napi_status
+napi_coerce_to_string (napi_env env, napi_value value, napi_value *result) {
+  int err = js_coerce_to_string(env, value, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+inline napi_status
+napi_coerce_to_object (napi_env env, napi_value value, napi_value *result) {
+  int err = js_coerce_to_object(env, value, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+inline napi_status
 napi_typeof (napi_env env, napi_value value, napi_valuetype *result) {
   js_value_type_t js_type;
 
