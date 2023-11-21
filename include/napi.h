@@ -903,8 +903,33 @@ napi_get_typedarray_info (napi_env env, napi_value typedarray, napi_typedarray_t
 
 inline napi_status
 napi_get_buffer_info (napi_env env, napi_value buffer, void **data, size_t *len) {
-  int err = js_get_typedarray_info(env, buffer, NULL, data, len, NULL, NULL);
-  return err == 0 ? napi_ok : napi_pending_exception;
+  js_typedarray_type_t js_type;
+
+  int err = js_get_typedarray_info(env, buffer, &js_type, data, len, NULL, NULL);
+  if (err < 0) return napi_pending_exception;
+
+  switch (js_type) {
+  case js_int8_array:
+  case js_uint8_array:
+  case js_uint8_clamped_array:
+    break;
+  case js_int16_array:
+  case js_uint16_array:
+    *len *= 2;
+    break;
+  case js_int32_array:
+  case js_uint32_array:
+  case js_float32_array:
+    *len *= 4;
+    break;
+  case js_float64_array:
+  case js_bigint64_array:
+  case js_biguint64_array:
+    *len *= 8;
+    break;
+  }
+
+  return napi_ok;
 }
 
 inline napi_status

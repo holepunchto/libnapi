@@ -1,5 +1,7 @@
 list(APPEND tests
   basic
+  get-buffer-info-uint8array
+  get-buffer-info-uint16array
   get-value-string-utf8
   get-value-string-utf8-length
   get-value-string-utf8-truncate
