@@ -207,6 +207,7 @@ napi_convert_to_typedarray_type (js_typedarray_type_t type) {
   case js_int8_array:
     return napi_int8_array;
   case js_uint8_array:
+  default:
     return napi_uint8_array;
   case js_uint8_clamped_array:
     return napi_uint8_clamped_array;
