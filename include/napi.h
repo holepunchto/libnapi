@@ -124,6 +124,7 @@ napi_convert_from_valuetype (napi_valuetype type) {
   case napi_undefined:
     return js_undefined;
   case napi_null:
+  default:
     return js_null;
   case napi_boolean:
     return js_boolean;
@@ -150,6 +151,7 @@ napi_convert_to_valuetype (js_value_type_t type) {
   case js_undefined:
     return napi_undefined;
   case js_null:
+  default:
     return napi_null;
   case js_boolean:
     return napi_boolean;
@@ -176,6 +178,7 @@ napi_convert_from_typedarray_type (napi_typedarray_type type) {
   case napi_int8_array:
     return js_int8_array;
   case napi_uint8_array:
+  default:
     return js_uint8_array;
   case napi_uint8_clamped_array:
     return js_uint8_clamped_array;
