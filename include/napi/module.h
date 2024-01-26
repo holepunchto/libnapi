@@ -23,28 +23,28 @@
 // https://stackoverflow.com/a/2390626
 
 #if defined(__cplusplus)
-#define NAPI_MODULE_CONSTRUCTOR(f) \
-  static void f(void); \
-  struct f##_ { \
-    f##_(void) { f(); } \
-  } f##_; \
-  static void f(void)
+#define NAPI_MODULE_CONSTRUCTOR(name) \
+  static void napi_register_module_##name(void); \
+  struct napi_register_module_##name##_ { \
+    napi_register_module_##name##_(void) { napi_register_module_##name(); } \
+  } napi_register_module_##name##_; \
+  static void napi_register_module_##name(void)
 #elif defined(_MSC_VER)
 #pragma section(".CRT$XCU", read)
-#define NAPI_MODULE_CONSTRUCTOR(f) \
-  static void f(void); \
-  __declspec(dllexport, allocate(".CRT$XCU")) void (*f##_)(void) = f; \
-  __pragma(comment(linker, "/include:" #f "_")) static void f(void)
+#define NAPI_MODULE_CONSTRUCTOR(name) \
+  static void napi_register_module_##name(void); \
+  __declspec(dllexport, allocate(".CRT$XCU")) void (*napi_register_module_##name##_)(void) = napi_register_module_##name; \
+  __pragma(comment(linker, "/include:napi_register_module_" #name "_")) static void napi_register_module_##name(void)
 #else
-#define NAPI_MODULE_CONSTRUCTOR(f) \
-  static void f(void) __attribute__((constructor)); \
-  static void f(void)
+#define NAPI_MODULE_CONSTRUCTOR(name) \
+  static void napi_register_module_##name(void) __attribute__((constructor)); \
+  static void napi_register_module_##name(void)
 #endif
 
 #ifdef NAPI_MODULE_REGISTER_CONSTRUCTOR
 
 #define NAPI_MODULE(name, fn) \
-  NAPI_MODULE_CONSTRUCTOR(napi_register_module_##name) { \
+  NAPI_MODULE_CONSTRUCTOR(name) { \
     napi_module module = { \
       NAPI_MODULE_VERSION, \
       0, \
