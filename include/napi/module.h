@@ -34,7 +34,7 @@
 #define NAPI_MODULE_CONSTRUCTOR(name) \
   static void napi_register_module_##name(void); \
   __declspec(dllexport, allocate(".CRT$XCU")) void (*napi_register_module_##name##_)(void) = napi_register_module_##name; \
-  __pragma(comment(linker, "/include:napi_register_module_" #name "_")) static void napi_register_module_##name(void)
+  static void napi_register_module_##name(void)
 #else
 #define NAPI_MODULE_CONSTRUCTOR(name) \
   static void napi_register_module_##name(void) __attribute__((constructor)); \
