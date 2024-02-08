@@ -23,20 +23,23 @@
 // https://stackoverflow.com/a/2390626
 
 #if defined(__cplusplus)
-#define NAPI_MODULE_CONSTRUCTOR(name) \
+#define NAPI_MODULE_CONSTRUCTOR_BASE(name, version) \
   static void napi_register_module_##name(void); \
-  struct napi_register_module_##name##_ { \
-    napi_register_module_##name##_(void) { napi_register_module_##name(); } \
-  } napi_register_module_##name##_; \
+  struct napi_register_module_##name##_##version##_ { \
+    napi_register_module_##name##_##version##_(void) { napi_register_module_##name(); } \
+  } napi_register_module_##name##_##version##_; \
   static void napi_register_module_##name(void)
+#define NAPI_MODULE_CONSTRUCTOR(name, version) NAPI_MODULE_CONSTRUCTOR_BASE(name, version)
 #elif defined(_MSC_VER)
 #pragma section(".CRT$XCU", read)
-#define NAPI_MODULE_CONSTRUCTOR(name) \
+#define NAPI_MODULE_CONSTRUCTOR_BASE(name, version) \
+  __pragma(comment(linker, "/include:napi_register_module_" #name "_" #version "_")); \
   static void napi_register_module_##name(void); \
-  __declspec(dllexport, allocate(".CRT$XCU")) void (*napi_register_module_##name##_)(void) = napi_register_module_##name; \
+  __declspec(dllexport, allocate(".CRT$XCU")) void (*napi_register_module_##name##_##version##_)(void) = napi_register_module_##name; \
   static void napi_register_module_##name(void)
+#define NAPI_MODULE_CONSTRUCTOR(name, version) NAPI_MODULE_CONSTRUCTOR_BASE(name, version)
 #else
-#define NAPI_MODULE_CONSTRUCTOR(name) \
+#define NAPI_MODULE_CONSTRUCTOR(name, version) \
   static void napi_register_module_##name(void) __attribute__((constructor)); \
   static void napi_register_module_##name(void)
 #endif
@@ -44,7 +47,7 @@
 #ifdef NAPI_MODULE_REGISTER_CONSTRUCTOR
 
 #define NAPI_MODULE(name, fn) \
-  NAPI_MODULE_CONSTRUCTOR(name) { \
+  NAPI_MODULE_CONSTRUCTOR(name, __COUNTER__) { \
     napi_module module = { \
       NAPI_MODULE_VERSION, \
       0, \
