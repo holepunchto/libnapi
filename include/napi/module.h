@@ -29,7 +29,6 @@
     napi_register_module_##name##_##version##_(void) { napi_register_module_##name(); } \
   } napi_register_module_##name##_##version##_; \
   static void napi_register_module_##name(void)
-#define NAPI_MODULE_CONSTRUCTOR(name, version) NAPI_MODULE_CONSTRUCTOR_BASE(name, version)
 #elif defined(_MSC_VER)
 #pragma section(".CRT$XCU", read)
 #define NAPI_MODULE_CONSTRUCTOR_BASE(name, version) \
@@ -37,12 +36,13 @@
   static void napi_register_module_##name(void); \
   __declspec(dllexport, allocate(".CRT$XCU")) void (*napi_register_module_##name##_##version##_)(void) = napi_register_module_##name; \
   static void napi_register_module_##name(void)
-#define NAPI_MODULE_CONSTRUCTOR(name, version) NAPI_MODULE_CONSTRUCTOR_BASE(name, version)
 #else
-#define NAPI_MODULE_CONSTRUCTOR(name, version) \
+#define NAPI_MODULE_CONSTRUCTOR_BASE(name, version) \
   static void napi_register_module_##name(void) __attribute__((constructor)); \
   static void napi_register_module_##name(void)
 #endif
+
+#define NAPI_MODULE_CONSTRUCTOR(name, version) NAPI_MODULE_CONSTRUCTOR_BASE(name, version)
 
 #ifdef NAPI_MODULE_REGISTER_CONSTRUCTOR
 
