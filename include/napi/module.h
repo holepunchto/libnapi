@@ -47,7 +47,7 @@
 #ifdef NAPI_MODULE_REGISTER_CONSTRUCTOR
 
 #define NAPI_MODULE(name, fn) \
-  NAPI_MODULE_CONSTRUCTOR(name, __COUNTER__) { \
+  NAPI_MODULE_CONSTRUCTOR(name, NAPI_MODULE_CONSTRUCTOR_VERSION) { \
     napi_module module = { \
       NAPI_MODULE_VERSION, \
       0, \
