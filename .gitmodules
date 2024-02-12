@@ -1,4 +1,4 @@
 [submodule "vendor/libjs"]
 	path = vendor/libjs
-	url = git@github.com:holepunchto/libjs.git
+	url = ../../holepunchto/libjs.git
 	shallow = true
