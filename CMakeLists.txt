@@ -31,7 +31,7 @@ target_include_directories(
     $<TARGET_PROPERTY:js,INTERFACE_INCLUDE_DIRECTORIES>
 )
 
-add_library(napi_shared SHARED $<TARGET_OBJECTS:napi>)
+add_library(napi_shared SHARED)
 
 set_target_properties(
   napi_shared
@@ -43,10 +43,11 @@ set_target_properties(
 target_link_libraries(
   napi_shared
   PUBLIC
+    napi
     js_shared
 )
 
-add_library(napi_static STATIC $<TARGET_OBJECTS:napi>)
+add_library(napi_static STATIC)
 
 set_target_properties(
   napi_static
@@ -58,6 +59,7 @@ set_target_properties(
 target_link_libraries(
   napi_static
   PUBLIC
+    napi
     js_static
 )
 

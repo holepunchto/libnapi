@@ -18,12 +18,6 @@ foreach(test IN LISTS tests)
       napi_shared
   )
 
-  target_include_directories(
-    ${test}
-    PRIVATE
-      $<TARGET_PROPERTY:napi,INTERFACE_INCLUDE_DIRECTORIES>
-  )
-
   add_test(
     NAME ${test}
     COMMAND ${test}
