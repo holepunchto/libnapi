@@ -176,56 +176,56 @@ inline js_typedarray_type_t
 napi_convert_from_typedarray_type (napi_typedarray_type type) {
   switch (type) {
   case napi_int8_array:
-    return js_int8_array;
+    return js_int8array;
   case napi_uint8_array:
   default:
-    return js_uint8_array;
+    return js_uint8array;
   case napi_uint8_clamped_array:
-    return js_uint8_clamped_array;
+    return js_uint8clampedarray;
   case napi_int16_array:
-    return js_int16_array;
+    return js_int16array;
   case napi_uint16_array:
-    return js_uint16_array;
+    return js_uint16array;
   case napi_int32_array:
-    return js_int32_array;
+    return js_int32array;
   case napi_uint32_array:
-    return js_uint32_array;
+    return js_uint32array;
   case napi_float32_array:
-    return js_float32_array;
+    return js_float32array;
   case napi_float64_array:
-    return js_float64_array;
+    return js_float64array;
   case napi_bigint64_array:
-    return js_bigint64_array;
+    return js_bigint64array;
   case napi_biguint64_array:
-    return js_biguint64_array;
+    return js_biguint64array;
   }
 }
 
 inline napi_typedarray_type
 napi_convert_to_typedarray_type (js_typedarray_type_t type) {
   switch (type) {
-  case js_int8_array:
+  case js_int8array:
     return napi_int8_array;
-  case js_uint8_array:
+  case js_uint8array:
   default:
     return napi_uint8_array;
-  case js_uint8_clamped_array:
+  case js_uint8clampedarray:
     return napi_uint8_clamped_array;
-  case js_int16_array:
+  case js_int16array:
     return napi_int16_array;
-  case js_uint16_array:
+  case js_uint16array:
     return napi_uint16_array;
-  case js_int32_array:
+  case js_int32array:
     return napi_int32_array;
-  case js_uint32_array:
+  case js_uint32array:
     return napi_uint32_array;
-  case js_float32_array:
+  case js_float32array:
     return napi_float32_array;
-  case js_float64_array:
+  case js_float64array:
     return napi_float64_array;
-  case js_bigint64_array:
+  case js_bigint64array:
     return napi_bigint64_array;
-  case js_biguint64_array:
+  case js_biguint64array:
     return napi_biguint64_array;
   }
 }
@@ -563,7 +563,7 @@ napi_create_buffer (napi_env env, size_t len, void **data, napi_value *result) {
   int err = js_create_arraybuffer(env, len, data, &arraybuffer);
   if (err < 0) return napi_pending_exception;
 
-  err = js_create_typedarray(env, js_uint8_array, len, arraybuffer, 0, result);
+  err = js_create_typedarray(env, js_uint8array, len, arraybuffer, 0, result);
   return err == 0 ? napi_ok : napi_pending_exception;
 }
 
@@ -576,7 +576,7 @@ napi_create_buffer_copy (napi_env env, size_t len, const void *data, void **resu
 
   if (result_data) memcpy(result_data, data, len);
 
-  err = js_create_typedarray(env, js_uint8_array, len, arraybuffer, 0, result);
+  err = js_create_typedarray(env, js_uint8array, len, arraybuffer, 0, result);
   return err == 0 ? napi_ok : napi_pending_exception;
 }
 
@@ -587,7 +587,7 @@ napi_create_external_buffer (napi_env env, size_t len, void *data, napi_finalize
   int err = js_create_external_arraybuffer(env, data, len, finalize_cb, finalize_hint, &arraybuffer);
   if (err < 0) return napi_pending_exception;
 
-  err = js_create_typedarray(env, js_uint8_array, len, arraybuffer, 0, result);
+  err = js_create_typedarray(env, js_uint8array, len, arraybuffer, 0, result);
   return err == 0 ? napi_ok : napi_pending_exception;
 }
 
@@ -686,7 +686,7 @@ napi_is_buffer (napi_env env, napi_value value, bool *result) {
   err = js_get_typedarray_info(env, value, &type, NULL, NULL, NULL, NULL);
   if (err < 0) return napi_pending_exception;
 
-  *result = type == js_uint8_array;
+  *result = type == js_uint8array;
 
   return napi_ok;
 }
@@ -913,22 +913,22 @@ napi_get_buffer_info (napi_env env, napi_value buffer, void **data, size_t *len)
   if (err < 0) return napi_pending_exception;
 
   switch (js_type) {
-  case js_int8_array:
-  case js_uint8_array:
-  case js_uint8_clamped_array:
+  case js_int8array:
+  case js_uint8array:
+  case js_uint8clampedarray:
     break;
-  case js_int16_array:
-  case js_uint16_array:
+  case js_int16array:
+  case js_uint16array:
     *len *= 2;
     break;
-  case js_int32_array:
-  case js_uint32_array:
-  case js_float32_array:
+  case js_int32array:
+  case js_uint32array:
+  case js_float32array:
     *len *= 4;
     break;
-  case js_float64_array:
-  case js_bigint64_array:
-  case js_biguint64_array:
+  case js_float64array:
+  case js_bigint64array:
+  case js_biguint64array:
     *len *= 8;
     break;
   }
