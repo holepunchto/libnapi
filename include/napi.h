@@ -17,7 +17,7 @@ extern "C" {
 typedef utf16_t char16_t;
 #endif
 
-#define NAPI_AUTO_LENGTH ((size_t) -1)
+#define NAPI_AUTO_LENGTH ((size_t) - 1)
 
 typedef js_env_t *napi_env;
 typedef js_value_t *napi_value;
@@ -26,10 +26,12 @@ typedef js_escapable_handle_scope_t *napi_escapable_handle_scope;
 typedef js_ref_t *napi_ref;
 typedef js_deferred_t *napi_deferred;
 typedef js_callback_info_t *napi_callback_info;
+typedef js_threadsafe_function_t *napi_threadsafe_function;
 typedef void *napi_async_context;
 
 typedef napi_value (*napi_callback)(napi_env, napi_callback_info);
-typedef void (*napi_finalize)(napi_env env, void *finalize_data, void *finalize_hint);
+typedef void (*napi_finalize)(napi_env, void *finalize_data, void *finalize_hint);
+typedef void (*napi_threadsafe_function_call_js)(napi_env, napi_value function, void *context, void *data);
 
 #include "napi/module.h"
 
@@ -117,6 +119,16 @@ typedef struct {
   uint64_t lower;
   uint64_t upper;
 } napi_type_tag;
+
+typedef enum {
+  napi_tsfn_release,
+  napi_tsfn_abort
+} napi_threadsafe_function_release_mode;
+
+typedef enum {
+  napi_tsfn_nonblocking,
+  napi_tsfn_blocking
+} napi_threadsafe_function_call_mode;
 
 inline js_value_type_t
 napi_convert_from_valuetype (napi_valuetype type) {
@@ -227,6 +239,50 @@ napi_convert_to_typedarray_type (js_typedarray_type_t type) {
     return napi_bigint64_array;
   case js_biguint64array:
     return napi_biguint64_array;
+  }
+}
+
+inline js_threadsafe_function_release_mode_t
+napi_convert_from_threadsafe_function_release_mode (napi_threadsafe_function_release_mode mode) {
+  switch (mode) {
+  case napi_tsfn_release:
+  default:
+    return js_threadsafe_function_release;
+  case napi_tsfn_abort:
+    return js_threadsafe_function_abort;
+  }
+}
+
+inline napi_threadsafe_function_release_mode
+napi_convert_to_threadsafe_function_release_mode (js_threadsafe_function_release_mode_t mode) {
+  switch (mode) {
+  case js_threadsafe_function_release:
+  default:
+    return napi_tsfn_release;
+  case js_threadsafe_function_abort:
+    return napi_tsfn_abort;
+  }
+}
+
+inline js_threadsafe_function_call_mode_t
+napi_convert_from_threadsafe_function_call_mode (napi_threadsafe_function_call_mode mode) {
+  switch (mode) {
+  case napi_tsfn_nonblocking:
+  default:
+    return js_threadsafe_function_nonblocking;
+  case napi_tsfn_blocking:
+    return js_threadsafe_function_blocking;
+  }
+}
+
+inline napi_threadsafe_function_call_mode
+napi_convert_to_threadsafe_function_call_mode (js_threadsafe_function_call_mode_t mode) {
+  switch (mode) {
+  case js_threadsafe_function_nonblocking:
+  default:
+    return napi_tsfn_nonblocking;
+  case js_threadsafe_function_blocking:
+    return napi_tsfn_blocking;
   }
 }
 
@@ -999,6 +1055,48 @@ napi_fatal_exception (napi_env env, napi_value error) {
 inline napi_status
 napi_adjust_external_memory (napi_env env, int64_t change_in_bytes, int64_t *result) {
   int err = js_adjust_external_memory(env, change_in_bytes, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+inline napi_status
+napi_create_threadsafe_function (napi_env env, napi_value function, napi_value async_resource, napi_value async_resource_name, size_t max_queue_size, size_t initial_thread_count, void *thread_finalize_data, napi_finalize thread_finalize_cb, void *context, napi_threadsafe_function_call_js cb, napi_threadsafe_function *result) {
+  int err = js_create_threadsafe_function(env, function, max_queue_size, initial_thread_count, thread_finalize_cb, thread_finalize_data, context, cb, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+inline napi_status
+napi_get_threadsafe_function_context (napi_threadsafe_function function, void **result) {
+  int err = js_get_threadsafe_function_context(function, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+inline napi_status
+napi_call_threadsafe_function (napi_threadsafe_function function, void *data, napi_threadsafe_function_call_mode mode) {
+  int err = js_call_threadsafe_function(function, data, napi_convert_from_threadsafe_function_call_mode(mode));
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+inline napi_status
+napi_acquire_threadsafe_function (napi_threadsafe_function function) {
+  int err = js_acquire_threadsafe_function(function);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+inline napi_status
+napi_release_threadsafe_function (napi_threadsafe_function function, napi_threadsafe_function_release_mode mode) {
+  int err = js_release_threadsafe_function(function, napi_convert_from_threadsafe_function_release_mode(mode));
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+inline napi_status
+napi_ref_threadsafe_function (napi_env env, napi_threadsafe_function function) {
+  int err = js_ref_threadsafe_function(env, function);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+inline napi_status
+napi_unref_threadsafe_function (napi_env env, napi_threadsafe_function function) {
+  int err = js_unref_threadsafe_function(env, function);
   return err == 0 ? napi_ok : napi_pending_exception;
 }
 

@@ -12,6 +12,18 @@ napi_convert_from_typedarray_type (napi_typedarray_type type);
 extern napi_typedarray_type
 napi_convert_to_typedarray_type (js_typedarray_type_t type);
 
+extern js_threadsafe_function_release_mode_t
+napi_convert_from_threadsafe_function_release_mode (napi_threadsafe_function_release_mode mode);
+
+extern napi_threadsafe_function_release_mode
+napi_convert_to_threadsafe_function_release_mode (js_threadsafe_function_release_mode_t mode);
+
+extern js_threadsafe_function_call_mode_t
+napi_convert_from_threadsafe_function_call_mode (napi_threadsafe_function_call_mode mode);
+
+extern napi_threadsafe_function_call_mode
+napi_convert_to_threadsafe_function_call_mode (js_threadsafe_function_call_mode_t mode);
+
 extern napi_status
 napi_get_uv_event_loop (napi_env env, uv_loop_t **loop);
 
@@ -332,3 +344,24 @@ napi_fatal_exception (napi_env env, napi_value err);
 
 extern napi_status
 napi_adjust_external_memory (napi_env env, int64_t change_in_bytes, int64_t *result);
+
+extern napi_status
+napi_create_threadsafe_function (napi_env env, napi_value function, napi_value async_resource, napi_value async_resource_name, size_t max_queue_size, size_t initial_thread_count, void *thread_finalize_data, napi_finalize thread_finalize_cb, void *context, napi_threadsafe_function_call_js cb, napi_threadsafe_function *result);
+
+extern napi_status
+napi_get_threadsafe_function_context (napi_threadsafe_function function, void **result);
+
+extern napi_status
+napi_call_threadsafe_function (napi_threadsafe_function function, void *data, napi_threadsafe_function_call_mode mode);
+
+extern napi_status
+napi_acquire_threadsafe_function (napi_threadsafe_function function);
+
+extern napi_status
+napi_release_threadsafe_function (napi_threadsafe_function function, napi_threadsafe_function_release_mode mode);
+
+extern napi_status
+napi_ref_threadsafe_function (napi_env env, napi_threadsafe_function function);
+
+extern napi_status
+napi_unref_threadsafe_function (napi_env env, napi_threadsafe_function function);

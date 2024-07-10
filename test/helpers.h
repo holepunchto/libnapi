@@ -9,6 +9,7 @@
 
 static js_env_t *env;
 static js_platform_t *platform;
+static js_handle_scope_t *scope;
 
 static inline napi_env
 napi_setup_env () {
@@ -22,12 +23,18 @@ napi_setup_env () {
   e = js_create_env(loop, platform, NULL, &env);
   assert(e == 0);
 
+  e = js_open_handle_scope(env, &scope);
+  assert(e == 0);
+
   return env;
 }
 
 static inline void
 napi_teardown_env () {
   int e;
+
+  e = js_close_handle_scope(env, scope);
+  assert(e == 0);
 
   e = js_destroy_env(env);
   assert(e == 0);
