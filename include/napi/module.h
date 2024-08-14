@@ -15,7 +15,7 @@
 
 #ifdef __cplusplus
 #define NAPI_MODULE_EXTERN_C_START extern "C" {
-#define NAPI_MODULE_EXTERN_C_END }
+#define NAPI_MODULE_EXTERN_C_END   }
 #else
 #define NAPI_MODULE_EXTERN_C_START
 #define NAPI_MODULE_EXTERN_C_END
@@ -30,14 +30,7 @@
 
 // https://stackoverflow.com/a/2390626
 
-#if defined(__cplusplus)
-#define NAPI_MODULE_CONSTRUCTOR_BASE(name, version) \
-  static void napi_register_module_##name(void); \
-  struct napi_register_module_##name##_##version##_ { \
-    napi_register_module_##name##_##version##_(void) { napi_register_module_##name(); } \
-  } napi_register_module_##name##_##version##_; \
-  static void napi_register_module_##name(void)
-#elif defined(_MSC_VER)
+#if defined(_MSC_VER)
 #pragma section(".CRT$XCU", read)
 #define NAPI_MODULE_CONSTRUCTOR_BASE(name, version) \
   __pragma(comment(linker, "/include:napi_register_module_" #name "_" #version "_")); \
@@ -55,6 +48,7 @@
 #ifdef NAPI_MODULE_REGISTER_CONSTRUCTOR
 
 #define NAPI_MODULE(name, fn) \
+  NAPI_MODULE_EXTERN_C_START \
   NAPI_MODULE_CONSTRUCTOR(name, NAPI_MODULE_CONSTRUCTOR_VERSION) { \
     napi_module module = { \
       NAPI_MODULE_VERSION, \
@@ -66,7 +60,8 @@
       {0}, \
     }; \
     napi_module_register(&module); \
-  }
+  } \
+  NAPI_MODULE_EXTERN_C_END
 
 #else
 
@@ -75,7 +70,7 @@
   napi_value NAPI_MODULE_SYMBOL_REGISTER(napi_env env, napi_value exports) { \
     return fn(env, exports); \
   } \
-  NAPI_MODULE_EXTERN_C_END \
+  NAPI_MODULE_EXTERN_C_END
 
 #endif
 
