@@ -322,6 +322,9 @@ extern napi_status
 napi_make_callback (napi_env env, napi_async_context async_hook, napi_value recv, napi_value fn, size_t argc, const napi_value argv[], napi_value *result);
 
 extern napi_status
+napi_new_instance (napi_env env, napi_value constructor, size_t argc, napi_value *argv, napi_value *result);
+
+extern napi_status
 napi_throw (napi_env env, napi_value error);
 
 extern napi_status
