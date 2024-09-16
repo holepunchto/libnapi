@@ -1011,6 +1011,12 @@ napi_make_callback (napi_env env, napi_async_context async_context, napi_value r
 }
 
 inline napi_status
+napi_new_instance (napi_env env, napi_value constructor, size_t argc, napi_value *argv, napi_value *result) {
+  int err = js_new_instance(env, constructor, argc, argv, result);
+  return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+inline napi_status
 napi_throw (napi_env env, napi_value error) {
   int err = js_throw(env, error);
   return err == 0 ? napi_ok : napi_pending_exception;
