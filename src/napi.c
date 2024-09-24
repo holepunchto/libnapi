@@ -368,3 +368,9 @@ napi_ref_threadsafe_function (napi_env env, napi_threadsafe_function function);
 
 extern napi_status
 napi_unref_threadsafe_function (napi_env env, napi_threadsafe_function function);
+
+extern napi_status
+napi_add_env_cleanup_hook (napi_env env, napi_cleanup_hook callback, void *data);
+
+extern napi_status
+napi_remove_env_cleanup_hook (napi_env env, napi_cleanup_hook callback, void *data);

@@ -32,6 +32,7 @@ typedef void *napi_async_context;
 typedef napi_value (*napi_callback)(napi_env, napi_callback_info);
 typedef void (*napi_finalize)(napi_env, void *finalize_data, void *finalize_hint);
 typedef void (*napi_threadsafe_function_call_js)(napi_env, napi_value function, void *context, void *data);
+typedef void (*napi_cleanup_hook)(void *data);
 
 #include "napi/module.h"
 
@@ -1104,6 +1105,20 @@ inline napi_status
 napi_unref_threadsafe_function (napi_env env, napi_threadsafe_function function) {
   int err = js_unref_threadsafe_function(env, function);
   return err == 0 ? napi_ok : napi_pending_exception;
+}
+
+inline napi_status
+napi_add_env_cleanup_hook (napi_env env, napi_cleanup_hook callback, void *data) {
+  int err = js_add_teardown_callback(env, callback, data);
+  if (err != 0) abort();
+  return napi_ok;
+}
+
+inline napi_status
+napi_remove_env_cleanup_hook (napi_env env, napi_cleanup_hook callback, void *data) {
+  int err = js_remove_teardown_callback(env, callback, data);
+  if (err != 0) abort();
+  return napi_ok;
 }
 
 #ifdef __cplusplus
