@@ -27,12 +27,14 @@ typedef js_ref_t *napi_ref;
 typedef js_deferred_t *napi_deferred;
 typedef js_callback_info_t *napi_callback_info;
 typedef js_threadsafe_function_t *napi_threadsafe_function;
+typedef js_deferred_teardown_t *napi_async_cleanup_hook_handle;
 typedef void *napi_async_context;
 
 typedef napi_value (*napi_callback)(napi_env, napi_callback_info);
 typedef void (*napi_finalize)(napi_env, void *finalize_data, void *finalize_hint);
 typedef void (*napi_threadsafe_function_call_js)(napi_env, napi_value function, void *context, void *data);
 typedef void (*napi_cleanup_hook)(void *data);
+typedef void (*napi_async_cleanup_hook)(napi_async_cleanup_hook_handle handle, void *data);
 
 #include "napi/module.h"
 
@@ -1118,6 +1120,20 @@ inline napi_status
 napi_remove_env_cleanup_hook (napi_env env, napi_cleanup_hook callback, void *data) {
   int err = js_remove_teardown_callback(env, callback, data);
   if (err != 0) abort();
+  return napi_ok;
+}
+
+inline napi_status
+napi_add_async_cleanup_hook (napi_env env, napi_async_cleanup_hook callback, void *data, napi_async_cleanup_hook_handle *result) {
+  int err = js_add_deferred_teardown_callback(env, callback, data, result);
+  if (err != 0) abort();
+  return napi_ok;
+}
+
+inline napi_status
+napi_remove_async_cleanup_hook (napi_async_cleanup_hook_handle handle) {
+  int err = js_finish_deferred_teardown_callback(handle);
+  assert(err == 0);
   return napi_ok;
 }
 
