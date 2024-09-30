@@ -1,4 +1,123 @@
+#include <js.h>
+#include <utf.h>
+#include <uv.h>
+
 #include "../include/napi.h"
+
+typedef struct {
+  napi_env env;
+  void *data;
+  napi_finalize finalize_cb;
+  void *finalize_hint;
+} napi_instance_data;
+
+static const char *napi_error_messages[] = {
+  NULL,
+  "Invalid argument",
+  "An object was expected",
+  "A string was expected",
+  "A string or symbol was expected",
+  "A function was expected",
+  "A number was expected",
+  "A boolean was expected",
+  "An array was expected",
+  "Unknown failure",
+  "An exception is pending",
+  "The async work item was cancelled",
+  "napi_escape_handle already called on scope",
+  "Invalid handle scope usage",
+  "Invalid callback scope usage",
+  "Thread-safe function queue is full",
+  "Thread-safe function handle is closing",
+  "A bigint was expected",
+  "A date was expected",
+  "An arraybuffer was expected",
+  "A detachable arraybuffer was expected",
+  "Main thread would deadlock",
+  "External buffers are not allowed",
+  "Cannot run JavaScript",
+};
+
+static _Thread_local napi_extended_error_info napi__extended_error_info = {
+  .error_code = 0,
+  .error_message = NULL,
+  .engine_error_code = 0,
+  .engine_reserved = NULL,
+};
+
+napi_status
+napi_set_last_error_info (napi_env env, napi_status error_code, uint32_t engine_error_code, void *engine_reserved) {
+  napi__extended_error_info.error_code = error_code;
+  napi__extended_error_info.engine_error_code = engine_error_code;
+  napi__extended_error_info.engine_reserved = engine_reserved;
+
+  return error_code;
+}
+
+napi_status
+napi_clear_last_error_info (napi_env env) {
+  napi__extended_error_info.error_code = napi_ok;
+  napi__extended_error_info.error_message = NULL;
+  napi__extended_error_info.engine_error_code = 0;
+  napi__extended_error_info.engine_reserved = NULL;
+
+  return napi_ok;
+}
+
+napi_status
+napi_get_last_error_info (napi_env env, const napi_extended_error_info **result) {
+  napi__extended_error_info.error_message = napi_error_messages[napi__extended_error_info.error_code];
+
+  if (napi__extended_error_info.error_code == napi_ok) {
+    napi_clear_last_error_info(env);
+  }
+
+  *result = &napi__extended_error_info;
+
+  return napi_ok;
+}
+
+static _Thread_local napi_instance_data napi__instance_data = {
+  .data = NULL,
+  .finalize_cb = NULL,
+  .finalize_hint = NULL,
+};
+
+static void
+napi__on_instance_data_finalize (void *data) {
+  napi__instance_data.finalize_cb(napi__instance_data.env, napi__instance_data.data, napi__instance_data.finalize_hint);
+}
+
+napi_status
+napi_set_instance_data (napi_env env, void *data, napi_finalize finalize_cb, void *finalize_hint) {
+  int err;
+
+  if (napi__instance_data.finalize_cb) {
+    err = js_remove_teardown_callback(env, napi__on_instance_data_finalize, NULL);
+
+    if (err < 0) return napi_set_last_error_info(env, napi_pending_exception, 0, NULL);
+  }
+
+  if (finalize_cb) {
+    err = js_add_teardown_callback(env, napi__on_instance_data_finalize, NULL);
+
+    if (err < 0) return napi_set_last_error_info(env, napi_pending_exception, 0, NULL);
+  }
+
+  napi__instance_data.env = env;
+  napi__instance_data.data = data;
+  napi__instance_data.finalize_cb = finalize_cb;
+  napi__instance_data.finalize_hint = finalize_hint;
+
+  return napi_clear_last_error_info(env);
+}
+
+napi_status
+napi_get_instance_data (napi_env env, void **result) {
+  *result = napi__instance_data.data;
+
+  return napi_clear_last_error_info(env);
+}
 
 extern js_value_type_t
 napi_convert_from_valuetype (napi_valuetype type);
@@ -107,6 +226,9 @@ napi_create_string_utf8 (napi_env env, const char *str, size_t len, napi_value *
 
 extern napi_status
 napi_create_string_utf16 (napi_env env, const char16_t *str, size_t len, napi_value *result);
+
+extern napi_status
+napi_create_string_latin1 (napi_env env, const char *str, size_t len, napi_value *result);
 
 extern napi_status
 napi_create_symbol (napi_env env, napi_value description, napi_value *result);
@@ -256,6 +378,9 @@ extern napi_status
 napi_get_value_string_utf16 (napi_env env, napi_value value, char16_t *str, size_t len, size_t *result);
 
 extern napi_status
+napi_get_value_string_latin1 (napi_env env, napi_value value, char *str, size_t len, size_t *result);
+
+extern napi_status
 napi_get_value_external (napi_env env, napi_value value, void **result);
 
 extern napi_status
@@ -272,6 +397,9 @@ napi_get_property_names (napi_env env, napi_value object, napi_value *result);
 
 extern napi_status
 napi_has_property (napi_env env, napi_value object, napi_value key, bool *result);
+
+extern napi_status
+napi_has_own_property (napi_env env, napi_value object, napi_value key, bool *result);
 
 extern napi_status
 napi_set_property (napi_env env, napi_value object, napi_value key, napi_value value);
@@ -302,6 +430,9 @@ napi_delete_element (napi_env env, napi_value object, uint32_t index, bool *resu
 
 extern napi_status
 napi_get_cb_info (napi_env env, napi_callback_info info, size_t *argc, napi_value argv[], napi_value *self, void **data);
+
+extern napi_status
+napi_get_new_target (napi_env env, napi_callback_info info, napi_value *result);
 
 extern napi_status
 napi_get_arraybuffer_info (napi_env env, napi_value arraybuffer, void **data, size_t *len);
@@ -345,6 +476,9 @@ napi_get_and_clear_last_exception (napi_env env, napi_value *result);
 extern napi_status
 napi_fatal_exception (napi_env env, napi_value err);
 
+extern void
+napi_fatal_error (const char *location, size_t location_len, const char *message, size_t message_len);
+
 extern napi_status
 napi_adjust_external_memory (napi_env env, int64_t change_in_bytes, int64_t *result);
 
@@ -380,3 +514,104 @@ napi_add_async_cleanup_hook (napi_env env, napi_async_cleanup_hook callback, voi
 
 extern napi_status
 napi_remove_async_cleanup_hook (napi_async_cleanup_hook_handle handle);
+
+extern napi_status
+napi_async_init (napi_env env, napi_value async_resource, napi_value async_resource_name, napi_async_context *result);
+
+extern napi_status
+napi_async_destroy (napi_env env, napi_async_context async_context);
+
+extern napi_status
+napi_open_callback_scope (napi_env env, napi_value resource, napi_async_context context, napi_callback_scope *result);
+
+extern napi_status
+napi_close_callback_scope (napi_env env, napi_callback_scope scope);
+
+struct napi_async_work {
+  uv_work_t handle;
+  napi_env env;
+  void *data;
+  napi_async_execute_callback execute;
+  napi_async_complete_callback complete;
+};
+
+napi_status
+napi_create_async_work (napi_env env, napi_value async_resource, napi_value async_resource_name, napi_async_execute_callback execute, napi_async_complete_callback complete, void *data, napi_async_work *result) {
+  napi_async_work work = malloc(sizeof(struct napi_async_work));
+
+  work->env = env;
+  work->data = data;
+  work->execute = execute;
+  work->complete = complete;
+
+  *result = work;
+
+  return napi_clear_last_error_info(env);
+}
+
+napi_status
+napi_delete_async_work (napi_env env, napi_async_work work) {
+  free(work);
+
+  return napi_clear_last_error_info(env);
+}
+
+static void
+napi__on_async_work (uv_work_t *handle) {
+  napi_async_work work = (napi_async_work) handle;
+
+  work->execute(work->env, work->data);
+}
+
+static void
+napi__on_after_async_work (uv_work_t *handle, int status) {
+  int err;
+
+  napi_async_work work = (napi_async_work) handle;
+
+  js_env_t *env = work->env;
+
+  js_handle_scope_t *scope;
+  err = js_open_handle_scope(env, &scope);
+  assert(err == 0);
+
+  work->complete(
+    env,
+    status == UV_ECANCELED ? napi_cancelled
+    : status < 0           ? napi_generic_failure
+                           : napi_ok,
+    work->data
+  );
+
+  err = js_close_handle_scope(env, scope);
+  assert(err == 0);
+}
+
+napi_status
+napi_queue_async_work (napi_env env, napi_async_work work) {
+  int err;
+
+  uv_loop_t *loop;
+  err = js_get_env_loop(env, &loop);
+  assert(err == 0);
+
+  err = uv_queue_work(loop, &work->handle, napi__on_async_work, napi__on_after_async_work);
+  assert(err == 0);
+
+  return napi_clear_last_error_info(env);
+}
+
+napi_status
+napi_cancel_async_work (napi_env env, napi_async_work work) {
+  int err = uv_cancel((uv_req_t *) &work->handle);
+
+  return napi_set_last_error_info(
+    env,
+    err == UV_EINVAL      ? napi_invalid_arg
+    : err == UV_ECANCELED ? napi_cancelled
+    : err < 0             ? napi_generic_failure
+                          : napi_ok,
+    0,
+    NULL
+  );
+}
