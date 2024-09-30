@@ -1,7 +1,9 @@
 list(APPEND tests
   basic
+  create-async-work
   get-buffer-info-uint8array
   get-buffer-info-uint16array
+  get-instance-data
   get-value-string-utf8
   get-value-string-utf8-length
   get-value-string-utf8-truncate

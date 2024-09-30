@@ -43,4 +43,15 @@ napi_teardown_env () {
   assert(e == 0);
 }
 
+static inline int
+napi_run_env () {
+  int e;
+
+  uv_loop_t *loop = uv_default_loop();
+
+  e = uv_run(loop, UV_RUN_DEFAULT);
+
+  return e;
+}
+
 #endif // NAPI_TEST_HELPERS_H
