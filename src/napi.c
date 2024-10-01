@@ -2,6 +2,14 @@
 #include <utf.h>
 #include <uv.h>
 
+#ifndef thread_local
+#ifdef _WIN32
+#define thread_local __declspec(thread)
+#else
+#define thread_local _Thread_local
+#endif
+#endif
+
 #include "../include/napi.h"
 
 typedef struct {
@@ -38,7 +46,7 @@ static const char *napi_error_messages[] = {
   "Cannot run JavaScript",
 };
 
-static _Thread_local napi_extended_error_info napi__extended_error_info = {
+static thread_local napi_extended_error_info napi__extended_error_info = {
   .error_code = 0,
   .error_message = NULL,
   .engine_error_code = 0,
@@ -77,7 +85,7 @@ napi_get_last_error_info (napi_env env, const napi_extended_error_info **result)
   return napi_ok;
 }
 
-static _Thread_local napi_instance_data napi__instance_data = {
+static thread_local napi_instance_data napi__instance_data = {
   .data = NULL,
   .finalize_cb = NULL,
   .finalize_hint = NULL,
