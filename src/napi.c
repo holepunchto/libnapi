@@ -2,6 +2,8 @@
 #include <utf.h>
 #include <uv.h>
 
+#include "../include/napi.h"
+
 #ifndef thread_local
 #ifdef _WIN32
 #define thread_local __declspec(thread)
@@ -9,8 +11,6 @@
 #define thread_local _Thread_local
 #endif
 #endif
-
-#include "../include/napi.h"
 
 typedef struct {
   napi_env env;
@@ -126,6 +126,9 @@ napi_get_instance_data (napi_env env, void **result) {
 
   return napi_clear_last_error_info(env);
 }
+
+extern napi_status
+napi_convert_to_status (int err);
 
 extern js_value_type_t
 napi_convert_from_valuetype (napi_valuetype type);
