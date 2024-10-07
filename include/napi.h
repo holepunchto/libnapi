@@ -420,7 +420,9 @@ napi_define_class (napi_env env, const char *name, size_t len, napi_callback con
 
   js_property_descriptor_t *js_properties = malloc(properties_len * sizeof(js_property_descriptor_t));
 
-  for (size_t i = 0; i < properties_len; i++) {
+  size_t i;
+
+  for (i = 0; i < properties_len; i++) {
     char *name;
 
     if (properties[i].name) {
@@ -460,16 +462,25 @@ napi_define_class (napi_env env, const char *name, size_t len, napi_callback con
       .setter = properties[i].setter,
       .value = properties[i].value,
     };
-
-    free(name);
   }
 
   err = js_define_class(env, name, len, constructor, data, js_properties, properties_len, result);
+
+  for (size_t j = 0; j < i; j++) {
+    free((char *) js_properties[j].name);
+  }
+
+  free(js_properties);
+
   if (err < 0) goto err;
 
   return napi_clear_last_error_info(env);
 
 err:
+  for (size_t j = 0; j < i; j++) {
+    free((char *) js_properties[j].name);
+  }
+
   free(js_properties);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), err, NULL);
@@ -481,7 +492,9 @@ napi_define_properties (napi_env env, napi_value object, size_t len, const napi_
 
   js_property_descriptor_t *js_properties = malloc(len * sizeof(js_property_descriptor_t));
 
-  for (size_t i = 0; i < len; i++) {
+  size_t i;
+
+  for (i = 0; i < len; i++) {
     char *name;
 
     if (properties[i].name) {
@@ -521,16 +534,25 @@ napi_define_properties (napi_env env, napi_value object, size_t len, const napi_
       .setter = properties[i].setter,
       .value = properties[i].value,
     };
-
-    free(name);
   }
 
   err = js_define_properties(env, object, js_properties, len);
+
+  for (size_t j = 0; j < i; j++) {
+    free((char *) js_properties[j].name);
+  }
+
+  free(js_properties);
+
   if (err < 0) goto err;
 
   return napi_clear_last_error_info(env);
 
 err:
+  for (size_t j = 0; j < i; j++) {
+    free((char *) js_properties[j].name);
+  }
+
   free(js_properties);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), err, NULL);
