@@ -420,41 +420,14 @@ napi_define_class (napi_env env, const char *name, size_t len, napi_callback con
 
   js_property_descriptor_t *js_properties = malloc(properties_len * sizeof(js_property_descriptor_t));
 
-  size_t i;
-
-  for (i = 0; i < properties_len; i++) {
-    char *name;
-
-    if (properties[i].name) {
-      bool is_string;
-      err = js_is_string(env, properties[i].name, &is_string);
-      assert(err == 0);
-
-      if (!is_string) {
-        err = js_throw_errorf(env, NULL, "Only string property names are supported");
-        assert(err == 0);
-
-        err = js_pending_exception;
-
-        goto err;
-      }
-
-      size_t len;
-      err = js_get_value_string_utf8(env, properties[i].name, NULL, 0, &len);
-      assert(err == 0);
-
-      len += 1 /* NULL */;
-
-      name = malloc(len);
-
-      err = js_get_value_string_utf8(env, properties[i].name, (utf8_t *) name, len, NULL);
-      assert(err == 0);
-    } else {
-      name = strdup(properties[i].utf8name);
+  for (size_t i = 0; i < properties_len; i++) {
+    if (properties[i].name == NULL) {
+      err = js_create_string_utf8(env, (const utf8_t *) properties[i].utf8name, -1, (js_value_t **) &properties[i].name);
+      if (err < 0) goto err;
     }
 
     js_properties[i] = (js_property_descriptor_t){
-      .name = name,
+      .name = properties[i].name,
       .data = properties[i].data,
       .attributes = properties[i].attributes,
       .method = properties[i].method,
@@ -465,22 +438,13 @@ napi_define_class (napi_env env, const char *name, size_t len, napi_callback con
   }
 
   err = js_define_class(env, name, len, constructor, data, js_properties, properties_len, result);
-
-  for (size_t j = 0; j < i; j++) {
-    free((char *) js_properties[j].name);
-  }
+  if (err < 0) goto err;
 
   free(js_properties);
-
-  if (err < 0) goto err;
 
   return napi_clear_last_error_info(env);
 
 err:
-  for (size_t j = 0; j < i; j++) {
-    free((char *) js_properties[j].name);
-  }
-
   free(js_properties);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), err, NULL);
@@ -495,38 +459,13 @@ napi_define_properties (napi_env env, napi_value object, size_t len, const napi_
   size_t i;
 
   for (i = 0; i < len; i++) {
-    char *name;
-
-    if (properties[i].name) {
-      bool is_string;
-      err = js_is_string(env, properties[i].name, &is_string);
-      assert(err == 0);
-
-      if (!is_string) {
-        err = js_throw_errorf(env, NULL, "Only string property names are supported");
-        assert(err == 0);
-
-        err = js_pending_exception;
-
-        goto err;
-      }
-
-      size_t len;
-      err = js_get_value_string_utf8(env, properties[i].name, NULL, 0, &len);
-      assert(err == 0);
-
-      len += 1 /* NULL */;
-
-      name = malloc(len);
-
-      err = js_get_value_string_utf8(env, properties[i].name, (utf8_t *) name, len, NULL);
-      assert(err == 0);
-    } else {
-      name = strdup(properties[i].utf8name);
+    if (properties[i].name == NULL) {
+      err = js_create_string_utf8(env, (const utf8_t *) properties[i].utf8name, -1, (js_value_t **) &properties[i].name);
+      if (err < 0) goto err;
     }
 
     js_properties[i] = (js_property_descriptor_t){
-      .name = name,
+      .name = properties[i].name,
       .data = properties[i].data,
       .attributes = properties[i].attributes,
       .method = properties[i].method,
@@ -537,22 +476,13 @@ napi_define_properties (napi_env env, napi_value object, size_t len, const napi_
   }
 
   err = js_define_properties(env, object, js_properties, len);
-
-  for (size_t j = 0; j < i; j++) {
-    free((char *) js_properties[j].name);
-  }
+  if (err < 0) goto err;
 
   free(js_properties);
-
-  if (err < 0) goto err;
 
   return napi_clear_last_error_info(env);
 
 err:
-  for (size_t j = 0; j < i; j++) {
-    free((char *) js_properties[j].name);
-  }
-
   free(js_properties);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), err, NULL);
