@@ -424,6 +424,19 @@ napi_define_class (napi_env env, const char *name, size_t len, napi_callback con
     char *name;
 
     if (properties[i].name) {
+      bool is_string;
+      err = js_is_string(env, properties[i].name, &is_string);
+      assert(err == 0);
+
+      if (!is_string) {
+        err = js_throw_errorf(env, NULL, "Only string property names are supported");
+        assert(err == 0);
+
+        err = js_pending_exception;
+
+        goto err;
+      }
+
       size_t len;
       err = js_get_value_string_utf8(env, properties[i].name, NULL, 0, &len);
       assert(err == 0);
@@ -472,6 +485,19 @@ napi_define_properties (napi_env env, napi_value object, size_t len, const napi_
     char *name;
 
     if (properties[i].name) {
+      bool is_string;
+      err = js_is_string(env, properties[i].name, &is_string);
+      assert(err == 0);
+
+      if (!is_string) {
+        err = js_throw_errorf(env, NULL, "Only string property names are supported");
+        assert(err == 0);
+
+        err = js_pending_exception;
+
+        goto err;
+      }
+
       size_t len;
       err = js_get_value_string_utf8(env, properties[i].name, NULL, 0, &len);
       assert(err == 0);
