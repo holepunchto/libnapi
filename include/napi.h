@@ -421,17 +421,25 @@ napi_define_class (napi_env env, const char *name, size_t len, napi_callback con
   js_property_descriptor_t *js_properties = malloc(properties_len * sizeof(js_property_descriptor_t));
 
   for (size_t i = 0; i < properties_len; i++) {
+    char *name;
+
     if (properties[i].name) {
-      err = js_throw_errorf(env, NULL, "Only string literal property names are supported");
+      size_t len;
+      err = js_get_value_string_utf8(env, properties[i].name, NULL, 0, &len);
       assert(err == 0);
 
-      err = js_pending_exception;
+      len += 1 /* NULL */;
 
-      goto err;
+      name = malloc(len);
+
+      err = js_get_value_string_utf8(env, properties[i].name, (utf8_t *) name, len, NULL);
+      assert(err == 0);
+    } else {
+      name = strdup(properties[i].utf8name);
     }
 
     js_properties[i] = (js_property_descriptor_t){
-      .name = properties[i].utf8name,
+      .name = name,
       .data = properties[i].data,
       .attributes = properties[i].attributes,
       .method = properties[i].method,
@@ -439,6 +447,8 @@ napi_define_class (napi_env env, const char *name, size_t len, napi_callback con
       .setter = properties[i].setter,
       .value = properties[i].value,
     };
+
+    free(name);
   }
 
   err = js_define_class(env, name, len, constructor, data, js_properties, properties_len, result);
@@ -459,17 +469,25 @@ napi_define_properties (napi_env env, napi_value object, size_t len, const napi_
   js_property_descriptor_t *js_properties = malloc(len * sizeof(js_property_descriptor_t));
 
   for (size_t i = 0; i < len; i++) {
+    char *name;
+
     if (properties[i].name) {
-      err = js_throw_errorf(env, NULL, "Only string literal property names are supported");
+      size_t len;
+      err = js_get_value_string_utf8(env, properties[i].name, NULL, 0, &len);
       assert(err == 0);
 
-      err = js_pending_exception;
+      len += 1 /* NULL */;
 
-      goto err;
+      name = malloc(len);
+
+      err = js_get_value_string_utf8(env, properties[i].name, (utf8_t *) name, len, NULL);
+      assert(err == 0);
+    } else {
+      name = strdup(properties[i].utf8name);
     }
 
     js_properties[i] = (js_property_descriptor_t){
-      .name = properties[i].utf8name,
+      .name = name,
       .data = properties[i].data,
       .attributes = properties[i].attributes,
       .method = properties[i].method,
@@ -477,6 +495,8 @@ napi_define_properties (napi_env env, napi_value object, size_t len, const napi_
       .setter = properties[i].setter,
       .value = properties[i].value,
     };
+
+    free(name);
   }
 
   err = js_define_properties(env, object, js_properties, len);
