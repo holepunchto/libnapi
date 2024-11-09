@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.22)
 
+find_package(cmake-fetch REQUIRED PATHS node_modules/cmake-fetch)
+
 project(napi C)
 
-if(NOT TARGET js)
-  add_subdirectory(vendor/libjs EXCLUDE_FROM_ALL)
-endif()
+fetch_package("github:holepunchto/libjs")
 
 add_library(napi OBJECT)
 
@@ -71,5 +71,6 @@ install(DIRECTORY include/napi DESTINATION include)
 
 if(PROJECT_IS_TOP_LEVEL)
   enable_testing()
+
   add_subdirectory(test)
 endif()
