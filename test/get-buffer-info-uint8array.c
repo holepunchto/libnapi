@@ -4,7 +4,7 @@
 #include "helpers.h"
 
 int
-main () {
+main() {
   int e;
 
   napi_env env = napi_setup_env();

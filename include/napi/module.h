@@ -87,6 +87,6 @@ typedef struct napi_module {
 } napi_module;
 
 extern void
-napi_module_register (napi_module *mod);
+napi_module_register(napi_module *mod);
 
 #endif // NAPI_MODULE_H

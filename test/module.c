@@ -7,7 +7,7 @@
 bool init_called = false;
 
 static napi_value
-init (napi_env env, napi_value exports) {
+init(napi_env env, napi_value exports) {
   init_called = true;
 
   return exports;
@@ -16,7 +16,7 @@ init (napi_env env, napi_value exports) {
 NAPI_MODULE(foo, init);
 
 int
-main () {
+main() {
   napi_register_module_v1(NULL, NULL);
 
   assert(init_called);

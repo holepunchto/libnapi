@@ -10,14 +10,14 @@
 bool register_called = false;
 
 static napi_value
-init (napi_env env, napi_value exports) {
+init(napi_env env, napi_value exports) {
   return exports;
 }
 
 NAPI_MODULE(foo, init);
 
 void
-napi_module_register (napi_module *mod) {
+napi_module_register(napi_module *mod) {
   register_called = true;
 
   assert(strcmp(mod->nm_modname, "foo") == 0);
@@ -26,6 +26,6 @@ napi_module_register (napi_module *mod) {
 }
 
 int
-main () {
+main() {
   assert(register_called);
 }

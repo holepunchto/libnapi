@@ -12,7 +12,7 @@ static js_platform_t *platform;
 static js_handle_scope_t *scope;
 
 static inline napi_env
-napi_setup_env () {
+napi_setup_env() {
   int e;
 
   uv_loop_t *loop = uv_default_loop();
@@ -30,7 +30,7 @@ napi_setup_env () {
 }
 
 static inline void
-napi_teardown_env () {
+napi_teardown_env() {
   int e;
 
   e = js_close_handle_scope(env, scope);
@@ -44,7 +44,7 @@ napi_teardown_env () {
 }
 
 static inline int
-napi_run_env () {
+napi_run_env() {
   int e;
 
   uv_loop_t *loop = uv_default_loop();

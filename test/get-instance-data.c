@@ -6,14 +6,14 @@
 static bool finalize_called = false;
 
 static void
-on_finalize (napi_env env, void *data, void *finalize_hint) {
+on_finalize(napi_env env, void *data, void *finalize_hint) {
   finalize_called = true;
 
   assert((intptr_t) data == 42);
 }
 
 int
-main () {
+main() {
   int e;
 
   napi_env env = napi_setup_env();

@@ -9,14 +9,14 @@ static bool execute_called = false;
 static bool complete_called = false;
 
 static void
-on_execute (napi_env env, void *data) {
+on_execute(napi_env env, void *data) {
   execute_called = true;
 
   assert((intptr_t) data == 42);
 }
 
 static void
-on_complete (napi_env env, napi_status status, void *data) {
+on_complete(napi_env env, napi_status status, void *data) {
   int e;
 
   complete_called = true;
@@ -28,7 +28,7 @@ on_complete (napi_env env, napi_status status, void *data) {
 }
 
 int
-main () {
+main() {
   int e;
 
   napi_env env = napi_setup_env();

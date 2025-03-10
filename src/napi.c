@@ -54,7 +54,7 @@ static thread_local napi_extended_error_info napi__extended_error_info = {
 };
 
 napi_status
-napi_set_last_error_info (napi_env env, napi_status error_code, uint32_t engine_error_code, void *engine_reserved) {
+napi_set_last_error_info(napi_env env, napi_status error_code, uint32_t engine_error_code, void *engine_reserved) {
   napi__extended_error_info.error_code = error_code;
   napi__extended_error_info.engine_error_code = engine_error_code;
   napi__extended_error_info.engine_reserved = engine_reserved;
@@ -63,7 +63,7 @@ napi_set_last_error_info (napi_env env, napi_status error_code, uint32_t engine_
 }
 
 napi_status
-napi_clear_last_error_info (napi_env env) {
+napi_clear_last_error_info(napi_env env) {
   napi__extended_error_info.error_code = napi_ok;
   napi__extended_error_info.error_message = NULL;
   napi__extended_error_info.engine_error_code = 0;
@@ -73,7 +73,7 @@ napi_clear_last_error_info (napi_env env) {
 }
 
 napi_status
-napi_get_last_error_info (napi_env env, const napi_extended_error_info **result) {
+napi_get_last_error_info(napi_env env, const napi_extended_error_info **result) {
   napi__extended_error_info.error_message = napi_error_messages[napi__extended_error_info.error_code];
 
   if (napi__extended_error_info.error_code == napi_ok) {
@@ -92,12 +92,12 @@ static thread_local napi_instance_data napi__instance_data = {
 };
 
 static void
-napi__on_instance_data_finalize (void *data) {
+napi__on_instance_data_finalize(void *data) {
   napi__instance_data.finalize_cb(napi__instance_data.env, napi__instance_data.data, napi__instance_data.finalize_hint);
 }
 
 napi_status
-napi_set_instance_data (napi_env env, void *data, napi_finalize finalize_cb, void *finalize_hint) {
+napi_set_instance_data(napi_env env, void *data, napi_finalize finalize_cb, void *finalize_hint) {
   int err;
 
   if (napi__instance_data.finalize_cb) {
@@ -121,422 +121,422 @@ napi_set_instance_data (napi_env env, void *data, napi_finalize finalize_cb, voi
 }
 
 napi_status
-napi_get_instance_data (napi_env env, void **result) {
+napi_get_instance_data(napi_env env, void **result) {
   *result = napi__instance_data.data;
 
   return napi_clear_last_error_info(env);
 }
 
 extern napi_status
-napi_convert_to_status (int err);
+napi_convert_to_status(int err);
 
 extern js_value_type_t
-napi_convert_from_valuetype (napi_valuetype type);
+napi_convert_from_valuetype(napi_valuetype type);
 
 extern napi_valuetype
-napi_convert_to_valuetype (js_value_type_t type);
+napi_convert_to_valuetype(js_value_type_t type);
 
 extern js_typedarray_type_t
-napi_convert_from_typedarray_type (napi_typedarray_type type);
+napi_convert_from_typedarray_type(napi_typedarray_type type);
 
 extern napi_typedarray_type
-napi_convert_to_typedarray_type (js_typedarray_type_t type);
+napi_convert_to_typedarray_type(js_typedarray_type_t type);
 
 extern js_threadsafe_function_release_mode_t
-napi_convert_from_threadsafe_function_release_mode (napi_threadsafe_function_release_mode mode);
+napi_convert_from_threadsafe_function_release_mode(napi_threadsafe_function_release_mode mode);
 
 extern napi_threadsafe_function_release_mode
-napi_convert_to_threadsafe_function_release_mode (js_threadsafe_function_release_mode_t mode);
+napi_convert_to_threadsafe_function_release_mode(js_threadsafe_function_release_mode_t mode);
 
 extern js_threadsafe_function_call_mode_t
-napi_convert_from_threadsafe_function_call_mode (napi_threadsafe_function_call_mode mode);
+napi_convert_from_threadsafe_function_call_mode(napi_threadsafe_function_call_mode mode);
 
 extern napi_threadsafe_function_call_mode
-napi_convert_to_threadsafe_function_call_mode (js_threadsafe_function_call_mode_t mode);
+napi_convert_to_threadsafe_function_call_mode(js_threadsafe_function_call_mode_t mode);
 
 extern napi_status
-napi_get_uv_event_loop (napi_env env, uv_loop_t **loop);
+napi_get_uv_event_loop(napi_env env, uv_loop_t **loop);
 
 extern napi_status
-napi_open_handle_scope (napi_env env, napi_handle_scope *result);
+napi_open_handle_scope(napi_env env, napi_handle_scope *result);
 
 extern napi_status
-napi_close_handle_scope (napi_env env, napi_handle_scope scope);
+napi_close_handle_scope(napi_env env, napi_handle_scope scope);
 
 extern napi_status
-napi_open_escapable_handle_scope (napi_env env, napi_escapable_handle_scope *result);
+napi_open_escapable_handle_scope(napi_env env, napi_escapable_handle_scope *result);
 
 extern napi_status
-napi_close_escapable_handle_scope (napi_env env, napi_escapable_handle_scope scope);
+napi_close_escapable_handle_scope(napi_env env, napi_escapable_handle_scope scope);
 
 extern napi_status
-napi_escape_handle (napi_env env, napi_escapable_handle_scope scope, napi_value escapee, napi_value *result);
+napi_escape_handle(napi_env env, napi_escapable_handle_scope scope, napi_value escapee, napi_value *result);
 
 extern napi_status
-napi_run_script (napi_env env, napi_value source, napi_value *result);
+napi_run_script(napi_env env, napi_value source, napi_value *result);
 
 extern napi_status
-napi_create_reference (napi_env env, napi_value value, uint32_t initial_refcount, napi_ref *result);
+napi_create_reference(napi_env env, napi_value value, uint32_t initial_refcount, napi_ref *result);
 
 extern napi_status
-napi_delete_reference (napi_env env, napi_ref ref);
+napi_delete_reference(napi_env env, napi_ref ref);
 
 extern napi_status
-napi_reference_ref (napi_env env, napi_ref ref, uint32_t *result);
+napi_reference_ref(napi_env env, napi_ref ref, uint32_t *result);
 
 extern napi_status
-napi_reference_unref (napi_env env, napi_ref ref, uint32_t *result);
+napi_reference_unref(napi_env env, napi_ref ref, uint32_t *result);
 
 extern napi_status
-napi_get_reference_value (napi_env env, napi_ref ref, napi_value *result);
+napi_get_reference_value(napi_env env, napi_ref ref, napi_value *result);
 
 extern napi_status
-napi_define_class (napi_env env, const char *name, size_t len, napi_callback constructor, void *data, size_t properties_len, const napi_property_descriptor *properties, napi_value *result);
+napi_define_class(napi_env env, const char *name, size_t len, napi_callback constructor, void *data, size_t properties_len, const napi_property_descriptor *properties, napi_value *result);
 
 extern napi_status
-napi_define_properties (napi_env env, napi_value object, size_t len, const napi_property_descriptor *properties);
+napi_define_properties(napi_env env, napi_value object, size_t len, const napi_property_descriptor *properties);
 
 extern napi_status
-napi_wrap (napi_env env, napi_value object, void *data, napi_finalize finalize_cb, void *finalize_hint, napi_ref *result);
+napi_wrap(napi_env env, napi_value object, void *data, napi_finalize finalize_cb, void *finalize_hint, napi_ref *result);
 
 extern napi_status
-napi_unwrap (napi_env env, napi_value object, void **result);
+napi_unwrap(napi_env env, napi_value object, void **result);
 
 extern napi_status
-napi_remove_wrap (napi_env env, napi_value object, void **result);
+napi_remove_wrap(napi_env env, napi_value object, void **result);
 
 extern napi_status
-napi_add_finalizer (napi_env env, napi_value object, void *data, napi_finalize finalize_cb, void *finalize_hint, napi_ref *result);
+napi_add_finalizer(napi_env env, napi_value object, void *data, napi_finalize finalize_cb, void *finalize_hint, napi_ref *result);
 
 extern napi_status
-napi_type_tag_object (napi_env env, napi_value object, const napi_type_tag *tag);
+napi_type_tag_object(napi_env env, napi_value object, const napi_type_tag *tag);
 
 extern napi_status
-napi_check_object_type_tag (napi_env env, napi_value object, const napi_type_tag *tag, bool *result);
+napi_check_object_type_tag(napi_env env, napi_value object, const napi_type_tag *tag, bool *result);
 
 extern napi_status
-napi_create_int32 (napi_env env, int32_t value, napi_value *result);
+napi_create_int32(napi_env env, int32_t value, napi_value *result);
 
 extern napi_status
-napi_create_uint32 (napi_env env, uint32_t value, napi_value *result);
+napi_create_uint32(napi_env env, uint32_t value, napi_value *result);
 
 extern napi_status
-napi_create_int64 (napi_env env, int64_t value, napi_value *result);
+napi_create_int64(napi_env env, int64_t value, napi_value *result);
 
 extern napi_status
-napi_create_double (napi_env env, double value, napi_value *result);
+napi_create_double(napi_env env, double value, napi_value *result);
 
 extern napi_status
-napi_create_bigint_int64 (napi_env env, int64_t value, napi_value *result);
+napi_create_bigint_int64(napi_env env, int64_t value, napi_value *result);
 
 extern napi_status
-napi_create_bigint_uint64 (napi_env env, uint64_t value, napi_value *result);
+napi_create_bigint_uint64(napi_env env, uint64_t value, napi_value *result);
 
 extern napi_status
-napi_create_string_utf8 (napi_env env, const char *str, size_t len, napi_value *result);
+napi_create_string_utf8(napi_env env, const char *str, size_t len, napi_value *result);
 
 extern napi_status
-napi_create_string_utf16 (napi_env env, const char16_t *str, size_t len, napi_value *result);
+napi_create_string_utf16(napi_env env, const char16_t *str, size_t len, napi_value *result);
 
 extern napi_status
-napi_create_string_latin1 (napi_env env, const char *str, size_t len, napi_value *result);
+napi_create_string_latin1(napi_env env, const char *str, size_t len, napi_value *result);
 
 extern napi_status
-napi_create_symbol (napi_env env, napi_value description, napi_value *result);
+napi_create_symbol(napi_env env, napi_value description, napi_value *result);
 
 extern napi_status
-napi_create_object (napi_env env, napi_value *result);
+napi_create_object(napi_env env, napi_value *result);
 
 extern napi_status
-napi_create_function (napi_env env, const char *name, size_t len, napi_callback cb, void *data, napi_value *result);
+napi_create_function(napi_env env, const char *name, size_t len, napi_callback cb, void *data, napi_value *result);
 
 extern napi_status
-napi_create_array (napi_env env, napi_value *result);
+napi_create_array(napi_env env, napi_value *result);
 
 extern napi_status
-napi_create_array_with_length (napi_env env, size_t len, napi_value *result);
+napi_create_array_with_length(napi_env env, size_t len, napi_value *result);
 
 extern napi_status
-napi_create_external (napi_env env, void *data, napi_finalize finalize_cb, void *finalize_hint, napi_value *result);
+napi_create_external(napi_env env, void *data, napi_finalize finalize_cb, void *finalize_hint, napi_value *result);
 
 extern napi_status
-napi_create_date (napi_env env, double time, napi_value *result);
+napi_create_date(napi_env env, double time, napi_value *result);
 
 extern napi_status
-napi_create_error (napi_env env, napi_value code, napi_value message, napi_value *result);
+napi_create_error(napi_env env, napi_value code, napi_value message, napi_value *result);
 
 extern napi_status
-napi_create_type_error (napi_env env, napi_value code, napi_value message, napi_value *result);
+napi_create_type_error(napi_env env, napi_value code, napi_value message, napi_value *result);
 
 extern napi_status
-napi_create_range_error (napi_env env, napi_value code, napi_value message, napi_value *result);
+napi_create_range_error(napi_env env, napi_value code, napi_value message, napi_value *result);
 
 extern napi_status
-napi_create_promise (napi_env env, napi_deferred *deferred, napi_value *promise);
+napi_create_promise(napi_env env, napi_deferred *deferred, napi_value *promise);
 
 extern napi_status
-napi_resolve_deferred (napi_env env, napi_deferred deferred, napi_value resolution);
+napi_resolve_deferred(napi_env env, napi_deferred deferred, napi_value resolution);
 
 extern napi_status
-napi_reject_deferred (napi_env env, napi_deferred deferred, napi_value resolution);
+napi_reject_deferred(napi_env env, napi_deferred deferred, napi_value resolution);
 
 extern napi_status
-napi_create_arraybuffer (napi_env env, size_t len, void **data, napi_value *result);
+napi_create_arraybuffer(napi_env env, size_t len, void **data, napi_value *result);
 
 extern napi_status
-napi_create_external_arraybuffer (napi_env env, void *data, size_t len, napi_finalize finalize_cb, void *finalize_hint, napi_value *result);
+napi_create_external_arraybuffer(napi_env env, void *data, size_t len, napi_finalize finalize_cb, void *finalize_hint, napi_value *result);
 
 extern napi_status
-napi_detach_arraybuffer (napi_env env, napi_value arraybuffer);
+napi_detach_arraybuffer(napi_env env, napi_value arraybuffer);
 
 extern napi_status
-napi_create_typedarray (napi_env env, napi_typedarray_type type, size_t len, napi_value arraybuffer, size_t offset, napi_value *result);
+napi_create_typedarray(napi_env env, napi_typedarray_type type, size_t len, napi_value arraybuffer, size_t offset, napi_value *result);
 
 extern napi_status
-napi_create_buffer (napi_env env, size_t len, void **data, napi_value *result);
+napi_create_buffer(napi_env env, size_t len, void **data, napi_value *result);
 
 extern napi_status
-napi_create_buffer_copy (napi_env env, size_t len, const void *data, void **result_data, napi_value *result);
+napi_create_buffer_copy(napi_env env, size_t len, const void *data, void **result_data, napi_value *result);
 
 extern napi_status
-napi_create_external_buffer (napi_env env, size_t len, void *data, napi_finalize finalize_cb, void *finalize_hint, napi_value *result);
+napi_create_external_buffer(napi_env env, size_t len, void *data, napi_finalize finalize_cb, void *finalize_hint, napi_value *result);
 
 extern napi_status
-napi_create_dataview (napi_env env, size_t len, napi_value arraybuffer, size_t offset, napi_value *result);
+napi_create_dataview(napi_env env, size_t len, napi_value arraybuffer, size_t offset, napi_value *result);
 
 extern napi_status
-napi_coerce_to_bool (napi_env env, napi_value value, napi_value *result);
+napi_coerce_to_bool(napi_env env, napi_value value, napi_value *result);
 
 extern napi_status
-napi_coerce_to_number (napi_env env, napi_value value, napi_value *result);
+napi_coerce_to_number(napi_env env, napi_value value, napi_value *result);
 
 extern napi_status
-napi_coerce_to_string (napi_env env, napi_value value, napi_value *result);
+napi_coerce_to_string(napi_env env, napi_value value, napi_value *result);
 
 extern napi_status
-napi_coerce_to_object (napi_env env, napi_value value, napi_value *result);
+napi_coerce_to_object(napi_env env, napi_value value, napi_value *result);
 
 extern napi_status
-napi_typeof (napi_env env, napi_value value, napi_valuetype *result);
+napi_typeof(napi_env env, napi_value value, napi_valuetype *result);
 
 extern napi_status
-napi_is_array (napi_env env, napi_value value, bool *result);
+napi_is_array(napi_env env, napi_value value, bool *result);
 
 extern napi_status
-napi_is_date (napi_env env, napi_value value, bool *result);
+napi_is_date(napi_env env, napi_value value, bool *result);
 
 extern napi_status
-napi_is_error (napi_env env, napi_value value, bool *result);
+napi_is_error(napi_env env, napi_value value, bool *result);
 
 extern napi_status
-napi_is_promise (napi_env env, napi_value value, bool *result);
+napi_is_promise(napi_env env, napi_value value, bool *result);
 
 extern napi_status
-napi_is_arraybuffer (napi_env env, napi_value value, bool *result);
+napi_is_arraybuffer(napi_env env, napi_value value, bool *result);
 
 extern napi_status
-napi_is_detached_arraybuffer (napi_env env, napi_value value, bool *result);
+napi_is_detached_arraybuffer(napi_env env, napi_value value, bool *result);
 
 extern napi_status
-napi_is_typedarray (napi_env env, napi_value value, bool *result);
+napi_is_typedarray(napi_env env, napi_value value, bool *result);
 
 extern napi_status
-napi_is_buffer (napi_env env, napi_value value, bool *result);
+napi_is_buffer(napi_env env, napi_value value, bool *result);
 
 extern napi_status
-napi_is_dataview (napi_env env, napi_value value, bool *result);
+napi_is_dataview(napi_env env, napi_value value, bool *result);
 
 extern napi_status
-napi_strict_equals (napi_env env, napi_value a, napi_value b, bool *result);
+napi_strict_equals(napi_env env, napi_value a, napi_value b, bool *result);
 
 extern napi_status
-napi_get_global (napi_env env, napi_value *result);
+napi_get_global(napi_env env, napi_value *result);
 
 extern napi_status
-napi_get_undefined (napi_env env, napi_value *result);
+napi_get_undefined(napi_env env, napi_value *result);
 
 extern napi_status
-napi_get_null (napi_env env, napi_value *result);
+napi_get_null(napi_env env, napi_value *result);
 
 extern napi_status
-napi_get_boolean (napi_env env, bool value, napi_value *result);
+napi_get_boolean(napi_env env, bool value, napi_value *result);
 
 extern napi_status
-napi_get_value_bool (napi_env env, napi_value value, bool *result);
+napi_get_value_bool(napi_env env, napi_value value, bool *result);
 
 extern napi_status
-napi_get_value_int32 (napi_env env, napi_value value, int32_t *result);
+napi_get_value_int32(napi_env env, napi_value value, int32_t *result);
 
 extern napi_status
-napi_get_value_uint32 (napi_env env, napi_value value, uint32_t *result);
+napi_get_value_uint32(napi_env env, napi_value value, uint32_t *result);
 
 extern napi_status
-napi_get_value_int64 (napi_env env, napi_value value, int64_t *result);
+napi_get_value_int64(napi_env env, napi_value value, int64_t *result);
 
 extern napi_status
-napi_get_value_double (napi_env env, napi_value value, double *result);
+napi_get_value_double(napi_env env, napi_value value, double *result);
 
 extern napi_status
-napi_get_value_bigint_int64 (napi_env env, napi_value value, int64_t *result, bool *lossless);
+napi_get_value_bigint_int64(napi_env env, napi_value value, int64_t *result, bool *lossless);
 
 extern napi_status
-napi_get_value_bigint_uint64 (napi_env env, napi_value value, uint64_t *result, bool *lossless);
+napi_get_value_bigint_uint64(napi_env env, napi_value value, uint64_t *result, bool *lossless);
 
 extern napi_status
-napi_get_value_string_utf8 (napi_env env, napi_value value, char *str, size_t len, size_t *result);
+napi_get_value_string_utf8(napi_env env, napi_value value, char *str, size_t len, size_t *result);
 
 extern napi_status
-napi_get_value_string_utf16 (napi_env env, napi_value value, char16_t *str, size_t len, size_t *result);
+napi_get_value_string_utf16(napi_env env, napi_value value, char16_t *str, size_t len, size_t *result);
 
 extern napi_status
-napi_get_value_string_latin1 (napi_env env, napi_value value, char *str, size_t len, size_t *result);
+napi_get_value_string_latin1(napi_env env, napi_value value, char *str, size_t len, size_t *result);
 
 extern napi_status
-napi_get_value_external (napi_env env, napi_value value, void **result);
+napi_get_value_external(napi_env env, napi_value value, void **result);
 
 extern napi_status
-napi_get_value_date (napi_env env, napi_value value, double *result);
+napi_get_value_date(napi_env env, napi_value value, double *result);
 
 extern napi_status
-napi_get_array_length (napi_env env, napi_value value, uint32_t *result);
+napi_get_array_length(napi_env env, napi_value value, uint32_t *result);
 
 extern napi_status
-napi_get_property (napi_env env, napi_value object, napi_value key, napi_value *result);
+napi_get_property(napi_env env, napi_value object, napi_value key, napi_value *result);
 
 extern napi_status
-napi_get_property_names (napi_env env, napi_value object, napi_value *result);
+napi_get_property_names(napi_env env, napi_value object, napi_value *result);
 
 extern napi_status
-napi_has_property (napi_env env, napi_value object, napi_value key, bool *result);
+napi_has_property(napi_env env, napi_value object, napi_value key, bool *result);
 
 extern napi_status
-napi_has_own_property (napi_env env, napi_value object, napi_value key, bool *result);
+napi_has_own_property(napi_env env, napi_value object, napi_value key, bool *result);
 
 extern napi_status
-napi_set_property (napi_env env, napi_value object, napi_value key, napi_value value);
+napi_set_property(napi_env env, napi_value object, napi_value key, napi_value value);
 
 extern napi_status
-napi_delete_property (napi_env env, napi_value object, napi_value key, bool *result);
+napi_delete_property(napi_env env, napi_value object, napi_value key, bool *result);
 
 extern napi_status
-napi_get_named_property (napi_env env, napi_value object, const char *name, napi_value *result);
+napi_get_named_property(napi_env env, napi_value object, const char *name, napi_value *result);
 
 extern napi_status
-napi_has_named_property (napi_env env, napi_value object, const char *name, bool *result);
+napi_has_named_property(napi_env env, napi_value object, const char *name, bool *result);
 
 extern napi_status
-napi_set_named_property (napi_env env, napi_value object, const char *name, napi_value value);
+napi_set_named_property(napi_env env, napi_value object, const char *name, napi_value value);
 
 extern napi_status
-napi_get_element (napi_env env, napi_value object, uint32_t index, napi_value *result);
+napi_get_element(napi_env env, napi_value object, uint32_t index, napi_value *result);
 
 extern napi_status
-napi_has_element (napi_env env, napi_value object, uint32_t index, bool *result);
+napi_has_element(napi_env env, napi_value object, uint32_t index, bool *result);
 
 extern napi_status
-napi_set_element (napi_env env, napi_value object, uint32_t index, napi_value value);
+napi_set_element(napi_env env, napi_value object, uint32_t index, napi_value value);
 
 extern napi_status
-napi_delete_element (napi_env env, napi_value object, uint32_t index, bool *result);
+napi_delete_element(napi_env env, napi_value object, uint32_t index, bool *result);
 
 extern napi_status
-napi_get_cb_info (napi_env env, napi_callback_info info, size_t *argc, napi_value argv[], napi_value *self, void **data);
+napi_get_cb_info(napi_env env, napi_callback_info info, size_t *argc, napi_value argv[], napi_value *self, void **data);
 
 extern napi_status
-napi_get_new_target (napi_env env, napi_callback_info info, napi_value *result);
+napi_get_new_target(napi_env env, napi_callback_info info, napi_value *result);
 
 extern napi_status
-napi_get_arraybuffer_info (napi_env env, napi_value arraybuffer, void **data, size_t *len);
+napi_get_arraybuffer_info(napi_env env, napi_value arraybuffer, void **data, size_t *len);
 
 extern napi_status
-napi_get_typedarray_info (napi_env env, napi_value typedarray, napi_typedarray_type *type, size_t *len, void **data, napi_value *arraybuffer, size_t *offset);
+napi_get_typedarray_info(napi_env env, napi_value typedarray, napi_typedarray_type *type, size_t *len, void **data, napi_value *arraybuffer, size_t *offset);
 
 extern napi_status
-napi_get_buffer_info (napi_env env, napi_value buffer, void **data, size_t *len);
+napi_get_buffer_info(napi_env env, napi_value buffer, void **data, size_t *len);
 
 extern napi_status
-napi_get_dataview_info (napi_env env, napi_value dataview, size_t *len, void **data, napi_value *arraybuffer, size_t *offset);
+napi_get_dataview_info(napi_env env, napi_value dataview, size_t *len, void **data, napi_value *arraybuffer, size_t *offset);
 
 extern napi_status
-napi_call_function (napi_env env, napi_value recv, napi_value fn, size_t argc, const napi_value argv[], napi_value *result);
+napi_call_function(napi_env env, napi_value recv, napi_value fn, size_t argc, const napi_value argv[], napi_value *result);
 
 extern napi_status
-napi_make_callback (napi_env env, napi_async_context async_hook, napi_value recv, napi_value fn, size_t argc, const napi_value argv[], napi_value *result);
+napi_make_callback(napi_env env, napi_async_context async_hook, napi_value recv, napi_value fn, size_t argc, const napi_value argv[], napi_value *result);
 
 extern napi_status
-napi_new_instance (napi_env env, napi_value constructor, size_t argc, napi_value *argv, napi_value *result);
+napi_new_instance(napi_env env, napi_value constructor, size_t argc, napi_value *argv, napi_value *result);
 
 extern napi_status
-napi_throw (napi_env env, napi_value error);
+napi_throw(napi_env env, napi_value error);
 
 extern napi_status
-napi_throw_error (napi_env env, const char *code, const char *msg);
+napi_throw_error(napi_env env, const char *code, const char *msg);
 
 extern napi_status
-napi_throw_type_error (napi_env env, const char *code, const char *message);
+napi_throw_type_error(napi_env env, const char *code, const char *message);
 
 extern napi_status
-napi_throw_range_error (napi_env env, const char *code, const char *message);
+napi_throw_range_error(napi_env env, const char *code, const char *message);
 
 extern napi_status
-napi_is_exception_pending (napi_env env, bool *result);
+napi_is_exception_pending(napi_env env, bool *result);
 
 extern napi_status
-napi_get_and_clear_last_exception (napi_env env, napi_value *result);
+napi_get_and_clear_last_exception(napi_env env, napi_value *result);
 
 extern napi_status
-napi_fatal_exception (napi_env env, napi_value err);
+napi_fatal_exception(napi_env env, napi_value err);
 
 extern void
-napi_fatal_error (const char *location, size_t location_len, const char *message, size_t message_len);
+napi_fatal_error(const char *location, size_t location_len, const char *message, size_t message_len);
 
 extern napi_status
-napi_adjust_external_memory (napi_env env, int64_t change_in_bytes, int64_t *result);
+napi_adjust_external_memory(napi_env env, int64_t change_in_bytes, int64_t *result);
 
 extern napi_status
-napi_create_threadsafe_function (napi_env env, napi_value function, napi_value async_resource, napi_value async_resource_name, size_t max_queue_size, size_t initial_thread_count, void *thread_finalize_data, napi_finalize thread_finalize_cb, void *context, napi_threadsafe_function_call_js cb, napi_threadsafe_function *result);
+napi_create_threadsafe_function(napi_env env, napi_value function, napi_value async_resource, napi_value async_resource_name, size_t max_queue_size, size_t initial_thread_count, void *thread_finalize_data, napi_finalize thread_finalize_cb, void *context, napi_threadsafe_function_call_js cb, napi_threadsafe_function *result);
 
 extern napi_status
-napi_get_threadsafe_function_context (napi_threadsafe_function function, void **result);
+napi_get_threadsafe_function_context(napi_threadsafe_function function, void **result);
 
 extern napi_status
-napi_call_threadsafe_function (napi_threadsafe_function function, void *data, napi_threadsafe_function_call_mode mode);
+napi_call_threadsafe_function(napi_threadsafe_function function, void *data, napi_threadsafe_function_call_mode mode);
 
 extern napi_status
-napi_acquire_threadsafe_function (napi_threadsafe_function function);
+napi_acquire_threadsafe_function(napi_threadsafe_function function);
 
 extern napi_status
-napi_release_threadsafe_function (napi_threadsafe_function function, napi_threadsafe_function_release_mode mode);
+napi_release_threadsafe_function(napi_threadsafe_function function, napi_threadsafe_function_release_mode mode);
 
 extern napi_status
-napi_ref_threadsafe_function (napi_env env, napi_threadsafe_function function);
+napi_ref_threadsafe_function(napi_env env, napi_threadsafe_function function);
 
 extern napi_status
-napi_unref_threadsafe_function (napi_env env, napi_threadsafe_function function);
+napi_unref_threadsafe_function(napi_env env, napi_threadsafe_function function);
 
 extern napi_status
-napi_add_env_cleanup_hook (napi_env env, napi_cleanup_hook callback, void *data);
+napi_add_env_cleanup_hook(napi_env env, napi_cleanup_hook callback, void *data);
 
 extern napi_status
-napi_remove_env_cleanup_hook (napi_env env, napi_cleanup_hook callback, void *data);
+napi_remove_env_cleanup_hook(napi_env env, napi_cleanup_hook callback, void *data);
 
 extern napi_status
-napi_add_async_cleanup_hook (napi_env env, napi_async_cleanup_hook callback, void *data, napi_async_cleanup_hook_handle *result);
+napi_add_async_cleanup_hook(napi_env env, napi_async_cleanup_hook callback, void *data, napi_async_cleanup_hook_handle *result);
 
 extern napi_status
-napi_remove_async_cleanup_hook (napi_async_cleanup_hook_handle handle);
+napi_remove_async_cleanup_hook(napi_async_cleanup_hook_handle handle);
 
 extern napi_status
-napi_async_init (napi_env env, napi_value async_resource, napi_value async_resource_name, napi_async_context *result);
+napi_async_init(napi_env env, napi_value async_resource, napi_value async_resource_name, napi_async_context *result);
 
 extern napi_status
-napi_async_destroy (napi_env env, napi_async_context async_context);
+napi_async_destroy(napi_env env, napi_async_context async_context);
 
 extern napi_status
-napi_open_callback_scope (napi_env env, napi_value resource, napi_async_context context, napi_callback_scope *result);
+napi_open_callback_scope(napi_env env, napi_value resource, napi_async_context context, napi_callback_scope *result);
 
 extern napi_status
-napi_close_callback_scope (napi_env env, napi_callback_scope scope);
+napi_close_callback_scope(napi_env env, napi_callback_scope scope);
 
 struct napi_async_work {
   uv_work_t handle;
@@ -547,7 +547,7 @@ struct napi_async_work {
 };
 
 napi_status
-napi_create_async_work (napi_env env, napi_value async_resource, napi_value async_resource_name, napi_async_execute_callback execute, napi_async_complete_callback complete, void *data, napi_async_work *result) {
+napi_create_async_work(napi_env env, napi_value async_resource, napi_value async_resource_name, napi_async_execute_callback execute, napi_async_complete_callback complete, void *data, napi_async_work *result) {
   napi_async_work work = malloc(sizeof(struct napi_async_work));
 
   work->env = env;
@@ -561,21 +561,21 @@ napi_create_async_work (napi_env env, napi_value async_resource, napi_value asyn
 }
 
 napi_status
-napi_delete_async_work (napi_env env, napi_async_work work) {
+napi_delete_async_work(napi_env env, napi_async_work work) {
   free(work);
 
   return napi_clear_last_error_info(env);
 }
 
 static void
-napi__on_async_work (uv_work_t *handle) {
+napi__on_async_work(uv_work_t *handle) {
   napi_async_work work = (napi_async_work) handle;
 
   work->execute(work->env, work->data);
 }
 
 static void
-napi__on_after_async_work (uv_work_t *handle, int status) {
+napi__on_after_async_work(uv_work_t *handle, int status) {
   int err;
 
   napi_async_work work = (napi_async_work) handle;
@@ -599,7 +599,7 @@ napi__on_after_async_work (uv_work_t *handle, int status) {
 }
 
 napi_status
-napi_queue_async_work (napi_env env, napi_async_work work) {
+napi_queue_async_work(napi_env env, napi_async_work work) {
   int err;
 
   uv_loop_t *loop;
@@ -613,7 +613,7 @@ napi_queue_async_work (napi_env env, napi_async_work work) {
 }
 
 napi_status
-napi_cancel_async_work (napi_env env, napi_async_work work) {
+napi_cancel_async_work(napi_env env, napi_async_work work) {
   int err = uv_cancel((uv_req_t *) &work->handle);
 
   return napi_set_last_error_info(
