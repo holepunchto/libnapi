@@ -111,6 +111,25 @@ typedef enum {
 
 } napi_property_attributes;
 
+typedef enum {
+  napi_key_include_prototypes,
+  napi_key_own_only
+} napi_key_collection_mode;
+
+typedef enum {
+  napi_key_all_properties = 0,
+  napi_key_writable = 1,
+  napi_key_enumerable = 1 << 1,
+  napi_key_configurable = 1 << 2,
+  napi_key_skip_strings = 1 << 3,
+  napi_key_skip_symbols = 1 << 4
+} napi_key_filter;
+
+typedef enum {
+  napi_key_keep_numbers,
+  napi_key_numbers_to_strings
+} napi_key_conversion;
+
 typedef struct {
   const char *error_message;
   void *engine_reserved;
@@ -283,6 +302,47 @@ napi_convert_to_typedarray_type(js_typedarray_type_t type) {
     return napi_bigint64_array;
   case js_biguint64array:
     return napi_biguint64_array;
+  }
+}
+
+inline js_key_collection_mode_t
+napi_convert_from_key_collection_mode(napi_key_collection_mode mode) {
+  switch (mode) {
+  case napi_key_include_prototypes:
+  default:
+    return js_key_include_prototypes;
+  case napi_key_own_only:
+    return js_key_own_only;
+  }
+}
+
+inline js_property_filter_t
+napi_convert_from_key_filter(napi_key_filter filter) {
+  switch (filter) {
+  case napi_key_all_properties:
+  default:
+    return js_property_all_properties;
+  case napi_key_writable:
+    return js_property_only_writable;
+  case napi_key_enumerable:
+    return js_property_only_enumerable;
+  case napi_key_configurable:
+    return js_property_only_configurable;
+  case napi_key_skip_strings:
+    return js_property_skip_strings;
+  case napi_key_skip_symbols:
+    return js_property_skip_symbols;
+  }
+}
+
+inline js_key_conversion_mode_t
+napi_convert_from_key_conversion(napi_key_conversion mode) {
+  switch (mode) {
+  case napi_key_keep_numbers:
+  default:
+    return js_key_keep_numbers;
+  case napi_key_numbers_to_strings:
+    return js_key_convert_to_string;
   }
 }
 
@@ -1018,6 +1078,13 @@ napi_get_array_length(napi_env env, napi_value value, uint32_t *result) {
 inline napi_status
 napi_get_property_names(napi_env env, napi_value object, napi_value *result) {
   int err = js_get_property_names(env, object, result);
+
+  return napi_set_last_error_info(env, napi_convert_to_status(err), err, NULL);
+}
+
+inline napi_status
+napi_get_all_property_names(napi_env env, napi_value object, napi_key_collection_mode key_mode, napi_key_filter key_filter, napi_key_conversion key_conversion, napi_value *result) {
+  int err = js_get_filtered_property_names(env, object, napi_convert_from_key_collection_mode(key_mode), napi_convert_from_key_filter(key_filter), js_index_include_indices, napi_convert_from_key_conversion(key_conversion), result);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), err, NULL);
 }

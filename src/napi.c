@@ -142,6 +142,15 @@ napi_convert_from_typedarray_type(napi_typedarray_type type);
 extern napi_typedarray_type
 napi_convert_to_typedarray_type(js_typedarray_type_t type);
 
+extern js_key_collection_mode_t
+napi_convert_from_key_collection_mode(napi_key_collection_mode mode);
+
+extern js_property_filter_t
+napi_convert_from_key_filter(napi_key_filter filter);
+
+extern js_key_conversion_mode_t
+napi_convert_from_key_conversion(napi_key_conversion mode);
+
 extern js_threadsafe_function_release_mode_t
 napi_convert_from_threadsafe_function_release_mode(napi_threadsafe_function_release_mode mode);
 
@@ -405,6 +414,9 @@ napi_get_property(napi_env env, napi_value object, napi_value key, napi_value *r
 
 extern napi_status
 napi_get_property_names(napi_env env, napi_value object, napi_value *result);
+
+extern napi_status
+napi_get_all_property_names(napi_env env, napi_value object, napi_key_collection_mode key_mode, napi_key_filter key_filter, napi_key_conversion key_conversion, napi_value *result);
 
 extern napi_status
 napi_has_property(napi_env env, napi_value object, napi_value key, bool *result);
