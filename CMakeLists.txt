@@ -31,7 +31,12 @@ target_include_directories(
   napi
   PUBLIC
     include
-    $<TARGET_PROPERTY:js,INTERFACE_INCLUDE_DIRECTORIES>
+)
+
+target_link_libraries(
+  napi
+  PUBLIC
+    js
 )
 
 add_library(napi_shared SHARED)
