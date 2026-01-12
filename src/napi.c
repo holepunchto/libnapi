@@ -242,6 +242,9 @@ extern napi_status
 napi_create_bigint_uint64(napi_env env, uint64_t value, napi_value *result);
 
 extern napi_status
+napi_create_bigint_words(napi_env env, int sign_bit, size_t word_count, const uint64_t *words, napi_value *result);
+
+extern napi_status
 napi_create_string_utf8(napi_env env, const char *str, size_t len, napi_value *result);
 
 extern napi_status
@@ -390,6 +393,9 @@ napi_get_value_bigint_int64(napi_env env, napi_value value, int64_t *result, boo
 
 extern napi_status
 napi_get_value_bigint_uint64(napi_env env, napi_value value, uint64_t *result, bool *lossless);
+
+extern napi_status
+napi_get_value_bigint_words(napi_env env, napi_value value, int *sign_bit, size_t *word_count, uint64_t *words);
 
 extern napi_status
 napi_get_value_string_utf8(napi_env env, napi_value value, char *str, size_t len, size_t *result);

@@ -633,6 +633,13 @@ napi_create_bigint_uint64(napi_env env, uint64_t value, napi_value *result) {
 }
 
 inline napi_status
+napi_create_bigint_words(napi_env env, int sign_bit, size_t word_count, const uint64_t *words, napi_value *result) {
+  int err = js_create_bigint_words(env, sign_bit, words, word_count, result);
+
+  return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
+}
+
+inline napi_status
 napi_create_string_utf8(napi_env env, const char *str, size_t len, napi_value *result) {
   int err = js_create_string_utf8(env, (const utf8_t *) str, len, result);
 
@@ -1017,6 +1024,13 @@ napi_get_value_bigint_int64(napi_env env, napi_value value, int64_t *result, boo
 inline napi_status
 napi_get_value_bigint_uint64(napi_env env, napi_value value, uint64_t *result, bool *lossless) {
   int err = js_get_value_bigint_uint64(env, value, result, lossless);
+
+  return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
+}
+
+inline napi_status
+napi_get_value_bigint_words(napi_env env, napi_value value, int *sign_bit, size_t *word_count, uint64_t *words) {
+  int err = js_get_value_bigint_words(env, value, sign_bit, words, *word_count, word_count);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
 }
