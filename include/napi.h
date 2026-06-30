@@ -95,6 +95,7 @@ typedef enum {
   napi_float64_array,
   napi_bigint64_array,
   napi_biguint64_array,
+  napi_float16_array,
 } napi_typedarray_type;
 
 typedef enum {
@@ -267,6 +268,8 @@ napi_convert_from_typedarray_type(napi_typedarray_type type) {
     return js_uint32array;
   case napi_float32_array:
     return js_float32array;
+  case napi_float16_array:
+    return js_float16array;
   case napi_float64_array:
     return js_float64array;
   case napi_bigint64_array:
@@ -296,6 +299,8 @@ napi_convert_to_typedarray_type(js_typedarray_type_t type) {
     return napi_uint32_array;
   case js_float32array:
     return napi_float32_array;
+  case js_float16array:
+    return napi_float16_array;
   case js_float64array:
     return napi_float64_array;
   case js_bigint64array:
@@ -1239,6 +1244,7 @@ napi_get_buffer_info(napi_env env, napi_value buffer, void **data, size_t *len) 
     break;
   case js_int16array:
   case js_uint16array:
+  case js_float16array:
     *len *= 2;
     break;
   case js_int32array:
