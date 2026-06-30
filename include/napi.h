@@ -666,6 +666,41 @@ napi_create_string_latin1(napi_env env, const char *str, size_t len, napi_value 
 }
 
 inline napi_status
+node_api_create_external_string_latin1(napi_env env, char *str, size_t len, napi_finalize finalize_cb, void *finalize_hint, napi_value *result, bool *copied) {
+  int err = js_create_external_string_latin1(env, (latin1_t *) str, len, finalize_cb, finalize_hint, result, copied);
+
+  return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
+}
+
+inline napi_status
+node_api_create_external_string_utf16(napi_env env, char16_t *str, size_t len, napi_finalize finalize_cb, void *finalize_hint, napi_value *result, bool *copied) {
+  int err = js_create_external_string_utf16le(env, (utf16_t *) str, len, finalize_cb, finalize_hint, result, copied);
+
+  return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
+}
+
+inline napi_status
+node_api_create_property_key_utf8(napi_env env, const char *str, size_t len, napi_value *result) {
+  int err = js_create_property_key_utf8(env, (const utf8_t *) str, len, result);
+
+  return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
+}
+
+inline napi_status
+node_api_create_property_key_utf16(napi_env env, const char16_t *str, size_t len, napi_value *result) {
+  int err = js_create_property_key_utf16le(env, (const utf16_t *) str, len, result);
+
+  return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
+}
+
+inline napi_status
+node_api_create_property_key_latin1(napi_env env, const char *str, size_t len, napi_value *result) {
+  int err = js_create_property_key_latin1(env, (const latin1_t *) str, len, result);
+
+  return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
+}
+
+inline napi_status
 napi_create_symbol(napi_env env, napi_value description, napi_value *result) {
   int err = js_create_symbol(env, description, result);
 
@@ -673,8 +708,22 @@ napi_create_symbol(napi_env env, napi_value description, napi_value *result) {
 }
 
 inline napi_status
+node_api_symbol_for(napi_env env, const char *description, size_t len, napi_value *result) {
+  int err = js_symbol_for(env, description, len, result);
+
+  return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
+}
+
+inline napi_status
 napi_create_object(napi_env env, napi_value *result) {
   int err = js_create_object(env, result);
+
+  return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
+}
+
+inline napi_status
+node_api_create_object_with_properties(napi_env env, napi_value prototype, napi_value *property_names, napi_value *property_values, size_t property_count, napi_value *result) {
+  int err = js_create_object_with_properties(env, prototype, (js_value_t *const *) property_names, (js_value_t *const *) property_values, property_count, result);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
 }
@@ -736,6 +785,13 @@ napi_create_range_error(napi_env env, napi_value code, napi_value message, napi_
 }
 
 inline napi_status
+node_api_create_syntax_error(napi_env env, napi_value code, napi_value message, napi_value *result) {
+  int err = js_create_syntax_error(env, code, message, result);
+
+  return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
+}
+
+inline napi_status
 napi_create_promise(napi_env env, napi_deferred *deferred, napi_value *promise) {
   int err = js_create_promise(env, deferred, promise);
 
@@ -766,6 +822,20 @@ napi_create_arraybuffer(napi_env env, size_t len, void **data, napi_value *resul
 inline napi_status
 napi_create_external_arraybuffer(napi_env env, void *data, size_t len, napi_finalize finalize_cb, void *finalize_hint, napi_value *result) {
   int err = js_create_external_arraybuffer(env, data, len, finalize_cb, finalize_hint, result);
+
+  return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
+}
+
+inline napi_status
+node_api_create_sharedarraybuffer(napi_env env, size_t len, void **data, napi_value *result) {
+  int err = js_create_sharedarraybuffer(env, len, data, result);
+
+  return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
+}
+
+inline napi_status
+node_api_create_external_sharedarraybuffer(napi_env env, void *data, size_t len, napi_finalize finalize_cb, void *finalize_hint, napi_value *result) {
+  int err = js_create_external_sharedarraybuffer(env, data, len, finalize_cb, finalize_hint, result);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
 }
@@ -911,6 +981,13 @@ napi_is_arraybuffer(napi_env env, napi_value value, bool *result) {
 }
 
 inline napi_status
+node_api_is_sharedarraybuffer(napi_env env, napi_value value, bool *result) {
+  int err = js_is_sharedarraybuffer(env, value, result);
+
+  return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
+}
+
+inline napi_status
 napi_is_detached_arraybuffer(napi_env env, napi_value value, bool *result) {
   int err = js_is_detached_arraybuffer(env, value, result);
 
@@ -952,6 +1029,13 @@ napi_is_dataview(napi_env env, napi_value value, bool *result) {
 inline napi_status
 napi_strict_equals(napi_env env, napi_value a, napi_value b, bool *result) {
   int err = js_strict_equals(env, a, b, result);
+
+  return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
+}
+
+inline napi_status
+napi_instanceof(napi_env env, napi_value object, napi_value constructor, bool *result) {
+  int err = js_instanceof(env, object, constructor, result);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
 }
@@ -1081,7 +1165,7 @@ napi_get_value_external(napi_env env, napi_value value, void **result) {
 }
 
 inline napi_status
-napi_get_value_date(napi_env env, napi_value value, double *result) {
+napi_get_date_value(napi_env env, napi_value value, double *result) {
   int err = js_get_value_date(env, value, result);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
@@ -1111,6 +1195,20 @@ napi_get_all_property_names(napi_env env, napi_value object, napi_key_collection
 inline napi_status
 napi_get_property(napi_env env, napi_value object, napi_value key, napi_value *result) {
   int err = js_get_property(env, object, key, result);
+
+  return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
+}
+
+inline napi_status
+napi_get_prototype(napi_env env, napi_value object, napi_value *result) {
+  int err = js_get_prototype(env, object, result);
+
+  return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
+}
+
+inline napi_status
+node_api_set_prototype(napi_env env, napi_value object, napi_value value) {
+  int err = js_set_prototype(env, object, value);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
 }
@@ -1314,6 +1412,13 @@ napi_throw_type_error(napi_env env, const char *code, const char *message) {
 inline napi_status
 napi_throw_range_error(napi_env env, const char *code, const char *message) {
   int err = js_throw_range_error(env, code, message);
+
+  return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
+}
+
+inline napi_status
+node_api_throw_syntax_error(napi_env env, const char *code, const char *message) {
+  int err = js_throw_syntax_error(env, code, message);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
 }
