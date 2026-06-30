@@ -1,14 +1,19 @@
 list(APPEND tests
   basic
   create-async-work
+  create-buffer-from-arraybuffer
   get-buffer-info-uint8array
   get-buffer-info-uint16array
   get-instance-data
+  get-version
   get-value-string-utf8
   get-value-string-utf8-length
   get-value-string-utf8-truncate
   module
   module-constructor
+  object-freeze
+  object-seal
+  post-finalizer
 )
 
 foreach(test IN LISTS tests)
