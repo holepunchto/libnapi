@@ -1,6 +1,6 @@
 # libnapi
 
-Node-API compatibility layer for https://github.com/holepunchto/libjs. It maintains ABI compatibility with a subset of the Node-API symbols, documented at https://nodejs.org/api/n-api.html; support for the entire set of Node-API symbols is, at least for the present, a non-goal.
+Node-API compatibility layer for https://github.com/holepunchto/libjs. It maintains ABI compatibility with the Node-API symbols documented at https://nodejs.org/api/n-api.html.
 
 ## API
 
@@ -18,7 +18,7 @@ Node-API module support is provided by the [`include/napi/module.h`](include/nap
 #include <napi/module.h>
 
 void
-napi_module_register (napi_module *mod) {
+napi_module_register(napi_module *mod) {
   // Do something with `mod`.
 }
 ```

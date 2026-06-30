@@ -12,6 +12,12 @@
 #endif
 #endif
 
+// The Node-API version reported by `napi_get_version()`. The runtime embedding
+// us owns this value and may override it at build time.
+#ifndef NAPI_VERSION
+#define NAPI_VERSION 10
+#endif
+
 typedef struct {
   napi_env env;
   void *data;
@@ -123,6 +129,13 @@ napi_set_instance_data(napi_env env, void *data, napi_finalize finalize_cb, void
 napi_status
 napi_get_instance_data(napi_env env, void **result) {
   *result = napi__instance_data.data;
+
+  return napi_clear_last_error_info(env);
+}
+
+napi_status
+napi_get_version(napi_env env, uint32_t *result) {
+  *result = NAPI_VERSION;
 
   return napi_clear_last_error_info(env);
 }
@@ -338,6 +351,9 @@ extern napi_status
 napi_create_buffer(napi_env env, size_t len, void **data, napi_value *result);
 
 extern napi_status
+node_api_create_buffer_from_arraybuffer(napi_env env, napi_value arraybuffer, size_t byte_offset, size_t byte_length, napi_value *result);
+
+extern napi_status
 napi_create_buffer_copy(napi_env env, size_t len, const void *data, void **result_data, napi_value *result);
 
 extern napi_status
@@ -459,6 +475,12 @@ napi_get_prototype(napi_env env, napi_value object, napi_value *result);
 
 extern napi_status
 node_api_set_prototype(napi_env env, napi_value object, napi_value value);
+
+extern napi_status
+napi_object_freeze(napi_env env, napi_value object);
+
+extern napi_status
+napi_object_seal(napi_env env, napi_value object);
 
 extern napi_status
 napi_get_property_names(napi_env env, napi_value object, napi_value *result);
@@ -688,4 +710,34 @@ napi_cancel_async_work(napi_env env, napi_async_work work) {
     0,
     NULL
   );
+}
+
+typedef struct {
+  napi_env env;
+  napi_finalize finalize_cb;
+  void *finalize_data;
+  void *finalize_hint;
+} napi_finalizer;
+
+static void
+napi__on_post_finalize(js_env_t *env, void *data) {
+  napi_finalizer *finalizer = (napi_finalizer *) data;
+
+  finalizer->finalize_cb(finalizer->env, finalizer->finalize_data, finalizer->finalize_hint);
+
+  free(finalizer);
+}
+
+napi_status
+node_api_post_finalizer(napi_env env, napi_finalize finalize_cb, void *finalize_data, void *finalize_hint) {
+  napi_finalizer *finalizer = malloc(sizeof(napi_finalizer));
+
+  finalizer->env = env;
+  finalizer->finalize_cb = finalize_cb;
+  finalizer->finalize_data = finalize_data;
+  finalizer->finalize_hint = finalize_hint;
+
+  int err = js_queue_microtask_with_callback(env, napi__on_post_finalize, finalizer);
+
+  return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
 }

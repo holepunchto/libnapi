@@ -181,6 +181,9 @@ napi_set_instance_data(napi_env env, void *data, napi_finalize finalize_cb, void
 napi_status
 napi_get_instance_data(napi_env env, void **result);
 
+napi_status
+napi_get_version(napi_env env, uint32_t *result);
+
 inline napi_status
 napi_convert_to_status(int err) {
   switch (err) {
@@ -870,6 +873,13 @@ napi_create_buffer(napi_env env, size_t len, void **data, napi_value *result) {
 }
 
 inline napi_status
+node_api_create_buffer_from_arraybuffer(napi_env env, napi_value arraybuffer, size_t byte_offset, size_t byte_length, napi_value *result) {
+  int err = js_create_typedarray(env, js_uint8array, byte_length, arraybuffer, byte_offset, result);
+
+  return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
+}
+
+inline napi_status
 napi_create_buffer_copy(napi_env env, size_t len, const void *data, void **result_data, napi_value *result) {
   js_value_t *arraybuffer;
 
@@ -1209,6 +1219,20 @@ napi_get_prototype(napi_env env, napi_value object, napi_value *result) {
 inline napi_status
 node_api_set_prototype(napi_env env, napi_value object, napi_value value) {
   int err = js_set_prototype(env, object, value);
+
+  return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
+}
+
+inline napi_status
+napi_object_freeze(napi_env env, napi_value object) {
+  int err = js_freeze(env, object);
+
+  return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
+}
+
+inline napi_status
+napi_object_seal(napi_env env, napi_value object) {
+  int err = js_seal(env, object);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
 }
@@ -1600,6 +1624,9 @@ napi_queue_async_work(napi_env env, napi_async_work work);
 
 napi_status
 napi_cancel_async_work(napi_env env, napi_async_work work);
+
+napi_status
+node_api_post_finalizer(napi_env env, napi_finalize finalize_cb, void *finalize_data, void *finalize_hint);
 
 #ifdef __cplusplus
 }
