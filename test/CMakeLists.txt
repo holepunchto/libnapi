@@ -1,6 +1,7 @@
 list(APPEND tests
   basic
   create-async-work
+  create-buffer-copy
   create-buffer-from-arraybuffer
   get-buffer-info-uint8array
   get-buffer-info-uint16array
