@@ -883,11 +883,15 @@ inline napi_status
 napi_create_buffer_copy(napi_env env, size_t len, const void *data, void **result_data, napi_value *result) {
   js_value_t *arraybuffer;
 
-  int err = js_create_arraybuffer(env, len, result_data, &arraybuffer);
+  void *buffer_data;
+
+  int err = js_create_arraybuffer(env, len, &buffer_data, &arraybuffer);
 
   if (err < 0) return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
 
-  if (result_data) memcpy(result_data, data, len);
+  memcpy(buffer_data, data, len);
+
+  if (result_data) *result_data = buffer_data;
 
   err = js_create_typedarray(env, js_uint8array, len, arraybuffer, 0, result);
 
