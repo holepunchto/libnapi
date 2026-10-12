@@ -37,6 +37,13 @@ target_link_libraries(
   napi
   PUBLIC
     js
+    utf
+)
+
+target_include_directories(
+  napi
+  PUBLIC
+    $<TARGET_PROPERTY:uv,INTERFACE_INCLUDE_DIRECTORIES>
 )
 
 add_library(napi_shared SHARED)
@@ -53,6 +60,7 @@ target_link_libraries(
   PUBLIC
     napi
     js_shared
+    utf_shared
 )
 
 add_library(napi_static STATIC)
@@ -69,6 +77,7 @@ target_link_libraries(
   PUBLIC
     napi
     js_static
+    utf_static
 )
 
 install(TARGETS napi_shared napi_static)
