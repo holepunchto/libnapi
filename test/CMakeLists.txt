@@ -27,6 +27,7 @@ list(APPEND tests
   object-seal
   object-type-mismatch
   post-finalizer
+  run-script-uncaught-exception
 )
 
 foreach(test IN LISTS tests)

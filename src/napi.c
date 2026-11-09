@@ -93,6 +93,18 @@ napi_get_last_error_info(napi_env env, const napi_extended_error_info **result) 
   return napi_ok;
 }
 
+static napi_status
+napi_convert_to_status(int err) {
+  switch (err) {
+  case 0:
+    return napi_ok;
+  case js_pending_exception:
+    return napi_pending_exception;
+  default:
+    return napi_generic_failure;
+  }
+}
+
 static thread_local napi_instance_data napi__instance_data = {
   .data = NULL,
   .finalize_cb = NULL,
@@ -113,13 +125,13 @@ napi_set_instance_data(napi_env env, void *data, napi_finalize finalize_cb, void
   if (napi__instance_data.finalize_cb) {
     err = js_remove_teardown_callback(env, napi__on_instance_data_finalize, NULL);
 
-    if (err < 0) return napi_set_last_error_info(env, napi_pending_exception, 0, NULL);
+    if (err < 0) return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
   }
 
   if (finalize_cb) {
     err = js_add_teardown_callback(env, napi__on_instance_data_finalize, NULL);
 
-    if (err < 0) return napi_set_last_error_info(env, napi_pending_exception, 0, NULL);
+    if (err < 0) return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
   }
 
   napi__instance_data.env = env;
@@ -146,19 +158,6 @@ napi_get_version(napi_env env, uint32_t *result) {
   *result = NAPI_VERSION;
 
   return napi_clear_last_error_info(env);
-}
-
-static napi_status
-napi_convert_to_status(int err) {
-  switch (err) {
-  case 0:
-    return napi_ok;
-  case js_pending_exception:
-  case js_uncaught_exception:
-    return napi_pending_exception;
-  default:
-    return napi_generic_failure;
-  }
 }
 
 static napi_valuetype
@@ -2136,16 +2135,6 @@ napi_status
 napi_get_and_clear_last_exception(napi_env env, napi_value *result) {
   if (env == NULL || result == NULL) return napi_set_last_error_info(env, napi_invalid_arg, 0, NULL);
 
-  const napi_extended_error_info *info;
-
-  napi_get_last_error_info(env, &info);
-
-  if (info->engine_error_code == (uint32_t) js_uncaught_exception) {
-    *result = NULL;
-
-    return napi_clear_last_error_info(env);
-  }
-
   int err = js_get_and_clear_last_exception(env, result);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
@@ -2465,8 +2454,6 @@ napi__on_post_finalize(js_env_t *env, void *data) {
   napi_finalizer *finalizer = (napi_finalizer *) data;
 
   finalizer->finalize_cb(finalizer->env, finalizer->finalize_data, finalizer->finalize_hint);
-
-  napi__report_pending_exception(env, "napi__on_post_finalize");
 
   free(finalizer);
 }
