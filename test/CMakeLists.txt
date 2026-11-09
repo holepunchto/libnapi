@@ -3,15 +3,20 @@ list(APPEND tests
   create-async-work
   create-buffer-copy
   create-buffer-from-arraybuffer
+  create-view-out-of-range
+  define-properties-const-descriptors
   get-buffer-info-uint8array
   get-buffer-info-uint16array
   get-info-type-mismatch
   get-instance-data
+  get-all-property-names-filter
   get-version
   get-value-string-utf8
   get-value-string-utf8-length
   get-value-string-utf8-truncate
+  get-value-string-null-buffer
   get-value-type-mismatch
+  invalid-args
   module
   module-constructor
   object-freeze

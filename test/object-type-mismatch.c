@@ -54,6 +54,10 @@ main() {
     assert(e == napi_object_expected);
   }
 
+  napi_value length_key;
+  e = napi_create_string_utf8(env, "length", -1, &length_key);
+  assert(e == 0);
+
   napi_value length;
   e = napi_get_named_property(env, string, "length", &length);
   assert(e == napi_ok);
@@ -97,6 +101,37 @@ main() {
 
   e = napi_call_function(env, undefined, function, 0, NULL, &value);
   assert(e == napi_ok);
+
+  napi_threadsafe_function tsfn;
+  e = napi_create_threadsafe_function(env, object, NULL, string, 0, 1, NULL, NULL, NULL, NULL, &tsfn);
+  assert(e == napi_function_expected);
+
+  e = napi_create_threadsafe_function(env, NULL, NULL, string, 0, 1, NULL, NULL, NULL, NULL, &tsfn);
+  assert(e == napi_invalid_arg);
+
+  bool has;
+  e = napi_has_own_property(env, object, number, &has);
+  assert(e == napi_name_expected);
+
+  e = napi_has_own_property(env, string, length_key, &has);
+  assert(e == napi_ok);
+  assert(has);
+
+  bool is_instance;
+  e = napi_instanceof(env, object, null, &is_instance);
+  assert(e == napi_function_expected);
+
+  e = napi_instanceof(env, object, object, &is_instance);
+  assert(e == napi_function_expected);
+
+  bool is_pending;
+  e = napi_is_exception_pending(env, &is_pending);
+  assert(e == napi_ok);
+  assert(!is_pending);
+
+  e = napi_instanceof(env, object, function, &is_instance);
+  assert(e == napi_ok);
+  assert(!is_instance);
 
   napi_teardown_env();
 }
