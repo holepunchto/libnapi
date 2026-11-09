@@ -1,5 +1,6 @@
 list(APPEND tests
   basic
+  cleanup-hook-errors
   create-async-work
   create-buffer-copy
   create-buffer-from-arraybuffer

@@ -2267,9 +2267,7 @@ napi_add_env_cleanup_hook(napi_env env, napi_cleanup_hook callback, void *data) 
 
   int err = js_add_teardown_callback(env, callback, data);
 
-  if (err != 0) abort();
-
-  return napi_clear_last_error_info(env);
+  return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
 }
 
 napi_status
@@ -2278,9 +2276,7 @@ napi_remove_env_cleanup_hook(napi_env env, napi_cleanup_hook callback, void *dat
 
   int err = js_remove_teardown_callback(env, callback, data);
 
-  if (err != 0) abort();
-
-  return napi_clear_last_error_info(env);
+  return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
 }
 
 napi_status
@@ -2289,9 +2285,7 @@ napi_add_async_cleanup_hook(napi_env env, napi_async_cleanup_hook callback, void
 
   int err = js_add_deferred_teardown_callback(env, callback, data, result);
 
-  if (err != 0) abort();
-
-  return napi_clear_last_error_info(env);
+  return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
 }
 
 napi_status
@@ -2300,9 +2294,7 @@ napi_remove_async_cleanup_hook(napi_async_cleanup_hook_handle handle) {
 
   int err = js_finish_deferred_teardown_callback(handle);
 
-  assert(err == 0);
-
-  return napi_ok;
+  return napi_convert_to_status(err);
 }
 
 napi_status
