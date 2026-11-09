@@ -10,6 +10,7 @@ list(APPEND tests
   get-value-string-utf8
   get-value-string-utf8-length
   get-value-string-utf8-truncate
+  get-value-type-mismatch
   module
   module-constructor
   object-freeze

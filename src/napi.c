@@ -149,6 +149,9 @@ napi_convert_from_valuetype(napi_valuetype type);
 extern napi_valuetype
 napi_convert_to_valuetype(js_value_type_t type);
 
+extern napi_status
+napi_check_value_type(napi_env env, napi_value value, js_value_type_t type, napi_status status);
+
 extern js_typedarray_type_t
 napi_convert_from_typedarray_type(napi_typedarray_type type);
 

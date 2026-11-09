@@ -251,6 +251,23 @@ napi_convert_to_valuetype(js_value_type_t type) {
   }
 }
 
+// Check that `value` is of the type a `napi_get_value_*()` function expects,
+// returning `status` if it isn't. The `js_get_value_*()` functions don't check
+// the type of their value, so reading a value of the wrong type with them
+// returns garbage or crashes.
+inline napi_status
+napi_check_value_type(napi_env env, napi_value value, js_value_type_t type, napi_status status) {
+  js_value_type_t actual;
+
+  int err = js_typeof(env, value, &actual);
+
+  if (err < 0) return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
+
+  if (actual != type) return napi_set_last_error_info(env, status, 0, NULL);
+
+  return napi_ok;
+}
+
 inline js_typedarray_type_t
 napi_convert_from_typedarray_type(napi_typedarray_type type) {
   switch (type) {
@@ -1084,6 +1101,10 @@ napi_get_boolean(napi_env env, bool value, napi_value *result) {
 
 inline napi_status
 napi_get_value_bool(napi_env env, napi_value value, bool *result) {
+  napi_status status = napi_check_value_type(env, value, js_boolean, napi_boolean_expected);
+
+  if (status != napi_ok) return status;
+
   int err = js_get_value_bool(env, value, result);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
@@ -1091,6 +1112,10 @@ napi_get_value_bool(napi_env env, napi_value value, bool *result) {
 
 inline napi_status
 napi_get_value_int32(napi_env env, napi_value value, int32_t *result) {
+  napi_status status = napi_check_value_type(env, value, js_number, napi_number_expected);
+
+  if (status != napi_ok) return status;
+
   int err = js_get_value_int32(env, value, result);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
@@ -1098,6 +1123,10 @@ napi_get_value_int32(napi_env env, napi_value value, int32_t *result) {
 
 inline napi_status
 napi_get_value_uint32(napi_env env, napi_value value, uint32_t *result) {
+  napi_status status = napi_check_value_type(env, value, js_number, napi_number_expected);
+
+  if (status != napi_ok) return status;
+
   int err = js_get_value_uint32(env, value, result);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
@@ -1105,6 +1134,10 @@ napi_get_value_uint32(napi_env env, napi_value value, uint32_t *result) {
 
 inline napi_status
 napi_get_value_int64(napi_env env, napi_value value, int64_t *result) {
+  napi_status status = napi_check_value_type(env, value, js_number, napi_number_expected);
+
+  if (status != napi_ok) return status;
+
   int err = js_get_value_int64(env, value, result);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
@@ -1112,6 +1145,10 @@ napi_get_value_int64(napi_env env, napi_value value, int64_t *result) {
 
 inline napi_status
 napi_get_value_double(napi_env env, napi_value value, double *result) {
+  napi_status status = napi_check_value_type(env, value, js_number, napi_number_expected);
+
+  if (status != napi_ok) return status;
+
   int err = js_get_value_double(env, value, result);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
@@ -1119,6 +1156,10 @@ napi_get_value_double(napi_env env, napi_value value, double *result) {
 
 inline napi_status
 napi_get_value_bigint_int64(napi_env env, napi_value value, int64_t *result, bool *lossless) {
+  napi_status status = napi_check_value_type(env, value, js_bigint, napi_bigint_expected);
+
+  if (status != napi_ok) return status;
+
   int err = js_get_value_bigint_int64(env, value, result, lossless);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
@@ -1126,6 +1167,10 @@ napi_get_value_bigint_int64(napi_env env, napi_value value, int64_t *result, boo
 
 inline napi_status
 napi_get_value_bigint_uint64(napi_env env, napi_value value, uint64_t *result, bool *lossless) {
+  napi_status status = napi_check_value_type(env, value, js_bigint, napi_bigint_expected);
+
+  if (status != napi_ok) return status;
+
   int err = js_get_value_bigint_uint64(env, value, result, lossless);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
@@ -1133,6 +1178,10 @@ napi_get_value_bigint_uint64(napi_env env, napi_value value, uint64_t *result, b
 
 inline napi_status
 napi_get_value_bigint_words(napi_env env, napi_value value, int *sign_bit, size_t *word_count, uint64_t *words) {
+  napi_status status = napi_check_value_type(env, value, js_bigint, napi_bigint_expected);
+
+  if (status != napi_ok) return status;
+
   int err = js_get_value_bigint_words(env, value, sign_bit, words, *word_count, word_count);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
@@ -1140,6 +1189,10 @@ napi_get_value_bigint_words(napi_env env, napi_value value, int *sign_bit, size_
 
 inline napi_status
 napi_get_value_string_utf8(napi_env env, napi_value value, char *str, size_t len, size_t *result) {
+  napi_status status = napi_check_value_type(env, value, js_string, napi_string_expected);
+
+  if (status != napi_ok) return status;
+
   int err = js_get_value_string_utf8(env, value, (utf8_t *) str, len > 0 ? len - 1 : 0, result);
 
   if (err < 0) return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
@@ -1151,6 +1204,10 @@ napi_get_value_string_utf8(napi_env env, napi_value value, char *str, size_t len
 
 inline napi_status
 napi_get_value_string_utf16(napi_env env, napi_value value, char16_t *str, size_t len, size_t *result) {
+  napi_status status = napi_check_value_type(env, value, js_string, napi_string_expected);
+
+  if (status != napi_ok) return status;
+
   int err = js_get_value_string_utf16le(env, value, str, len > 0 ? len - 1 : 0, result);
 
   if (err < 0) return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
@@ -1162,6 +1219,10 @@ napi_get_value_string_utf16(napi_env env, napi_value value, char16_t *str, size_
 
 inline napi_status
 napi_get_value_string_latin1(napi_env env, napi_value value, char *str, size_t len, size_t *result) {
+  napi_status status = napi_check_value_type(env, value, js_string, napi_string_expected);
+
+  if (status != napi_ok) return status;
+
   int err = js_get_value_string_latin1(env, value, (latin1_t *) str, len > 0 ? len - 1 : 0, result);
 
   if (err < 0) return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
@@ -1173,6 +1234,10 @@ napi_get_value_string_latin1(napi_env env, napi_value value, char *str, size_t l
 
 inline napi_status
 napi_get_value_external(napi_env env, napi_value value, void **result) {
+  napi_status status = napi_check_value_type(env, value, js_external, napi_invalid_arg);
+
+  if (status != napi_ok) return status;
+
   int err = js_get_value_external(env, value, result);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
