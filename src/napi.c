@@ -1400,18 +1400,23 @@ napi_status
 napi_is_buffer(napi_env env, napi_value value, bool *result) {
   if (env == NULL || value == NULL || result == NULL) return napi_set_last_error_info(env, napi_invalid_arg, 0, NULL);
 
-  int err = js_is_typedarray(env, value, result);
+  js_value_type_t type;
 
-  if (err < 0) return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
+  napi_status status = napi_get_value_type(env, value, &type);
 
-  if (!*result) return napi_clear_last_error_info(env);
+  if (status != napi_ok) return status;
 
-  js_typedarray_type_t type;
-  err = js_get_typedarray_info(env, value, &type, NULL, NULL, NULL, NULL);
+  *result = false;
 
-  if (err < 0) return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
+  if (type == js_object) {
+    js_object_type_t object_type;
 
-  *result = type == js_uint8array;
+    int err = js_get_object_type(env, value, &object_type);
+
+    if (err < 0) return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
+
+    *result = object_type == js_typedarray || object_type == js_dataview;
+  }
 
   return napi_clear_last_error_info(env);
 }

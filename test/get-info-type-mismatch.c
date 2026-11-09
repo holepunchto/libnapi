@@ -70,6 +70,11 @@ main() {
     e = napi_get_typedarray_info(env, value, NULL, &len, NULL, NULL, NULL);
     assert(e == (i == TYPEDARRAY ? napi_ok : napi_invalid_arg));
 
+    bool is_buffer;
+    e = napi_is_buffer(env, value, &is_buffer);
+    assert(e == napi_ok);
+    assert(is_buffer == (i == TYPEDARRAY || i == DATAVIEW));
+
     e = napi_get_buffer_info(env, value, NULL, &len);
     assert(e == (i == TYPEDARRAY || i == DATAVIEW ? napi_ok : napi_invalid_arg));
     if (e == napi_ok) assert(len == 4);
