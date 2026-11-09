@@ -19,6 +19,7 @@ list(APPEND tests
   invalid-args
   module
   module-constructor
+  null-args
   object-freeze
   object-seal
   object-type-mismatch
