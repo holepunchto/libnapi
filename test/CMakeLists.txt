@@ -5,15 +5,18 @@ list(APPEND tests
   create-buffer-from-arraybuffer
   get-buffer-info-uint8array
   get-buffer-info-uint16array
+  get-info-type-mismatch
   get-instance-data
   get-version
   get-value-string-utf8
   get-value-string-utf8-length
   get-value-string-utf8-truncate
+  get-value-type-mismatch
   module
   module-constructor
   object-freeze
   object-seal
+  object-type-mismatch
   post-finalizer
 )
 
