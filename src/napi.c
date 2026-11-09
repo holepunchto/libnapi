@@ -2365,6 +2365,25 @@ napi_delete_async_work(napi_env env, napi_async_work work) {
 }
 
 static void
+napi__report_pending_exception(js_env_t *env, const char *location) {
+  bool is_pending;
+  int err = js_is_exception_pending(env, &is_pending);
+
+  if (err < 0) napi_fatal_error(location, NAPI_AUTO_LENGTH, "Could not check for a pending exception", NAPI_AUTO_LENGTH);
+
+  if (!is_pending) return;
+
+  js_value_t *error;
+  err = js_get_and_clear_last_exception(env, &error);
+
+  if (err < 0) napi_fatal_error(location, NAPI_AUTO_LENGTH, "Could not clear the pending exception", NAPI_AUTO_LENGTH);
+
+  err = js_fatal_exception(env, error);
+
+  if (err < 0) napi_fatal_error(location, NAPI_AUTO_LENGTH, "Could not report the pending exception", NAPI_AUTO_LENGTH);
+}
+
+static void
 napi__on_async_work(uv_work_t *handle) {
   napi_async_work work = (napi_async_work) handle;
 
@@ -2377,11 +2396,14 @@ napi__on_after_async_work(uv_work_t *handle, int status) {
 
   napi_async_work work = (napi_async_work) handle;
 
+  if (work->complete == NULL) return;
+
   js_env_t *env = work->env;
 
   js_handle_scope_t *scope;
   err = js_open_handle_scope(env, &scope);
-  assert(err == 0);
+
+  if (err < 0) napi_fatal_error("napi__on_after_async_work", NAPI_AUTO_LENGTH, "Could not open handle scope", NAPI_AUTO_LENGTH);
 
   work->complete(
     env,
@@ -2391,22 +2413,25 @@ napi__on_after_async_work(uv_work_t *handle, int status) {
     work->data
   );
 
+  napi__report_pending_exception(env, "napi__on_after_async_work");
+
   err = js_close_handle_scope(env, scope);
-  assert(err == 0);
+
+  if (err < 0) napi_fatal_error("napi__on_after_async_work", NAPI_AUTO_LENGTH, "Could not close handle scope", NAPI_AUTO_LENGTH);
 }
 
 napi_status
 napi_queue_async_work(napi_env env, napi_async_work work) {
   if (env == NULL || work == NULL) return napi_set_last_error_info(env, napi_invalid_arg, 0, NULL);
 
-  int err;
-
   uv_loop_t *loop;
-  err = js_get_env_loop(env, &loop);
-  assert(err == 0);
+  int err = js_get_env_loop(env, &loop);
+
+  if (err < 0) return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
 
   err = uv_queue_work(loop, &work->handle, napi__on_async_work, napi__on_after_async_work);
-  assert(err == 0);
+
+  if (err < 0) return napi_set_last_error_info(env, napi_generic_failure, (uint32_t) err, NULL);
 
   return napi_clear_last_error_info(env);
 }
@@ -2440,6 +2465,8 @@ napi__on_post_finalize(js_env_t *env, void *data) {
   napi_finalizer *finalizer = (napi_finalizer *) data;
 
   finalizer->finalize_cb(finalizer->env, finalizer->finalize_data, finalizer->finalize_hint);
+
+  napi__report_pending_exception(env, "napi__on_post_finalize");
 
   free(finalizer);
 }

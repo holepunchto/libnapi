@@ -8,6 +8,9 @@ static void
 on_cleanup(void *data) {}
 
 static void
+on_async_cleanup(napi_async_cleanup_hook_handle handle, void *data) {}
+
+static void
 assert_pending_exception(napi_env env, napi_status status) {
   int e;
 
@@ -41,6 +44,17 @@ main() {
   assert_pending_exception(env, e);
 
   e = napi_remove_env_cleanup_hook(env, on_cleanup, &data);
+  assert(e == napi_ok);
+
+  napi_async_cleanup_hook_handle handle;
+  e = napi_add_async_cleanup_hook(env, on_async_cleanup, &data, &handle);
+  assert(e == napi_ok);
+
+  napi_async_cleanup_hook_handle duplicate;
+  e = napi_add_async_cleanup_hook(env, on_async_cleanup, &data, &duplicate);
+  assert_pending_exception(env, e);
+
+  e = napi_remove_async_cleanup_hook(handle);
   assert(e == napi_ok);
 
   napi_teardown_env();

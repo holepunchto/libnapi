@@ -1,7 +1,9 @@
 list(APPEND tests
   basic
+  callback-uncaught-exception
   cleanup-hook-errors
   create-async-work
+  create-async-work-without-complete
   create-buffer-copy
   create-buffer-from-arraybuffer
   create-view-out-of-range
