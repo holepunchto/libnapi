@@ -70,15 +70,44 @@ main() {
     e = napi_get_typedarray_info(env, value, NULL, &len, NULL, NULL, NULL);
     assert(e == (i == TYPEDARRAY ? napi_ok : napi_invalid_arg));
 
+    bool is_buffer;
+    e = napi_is_buffer(env, value, &is_buffer);
+    assert(e == napi_ok);
+    assert(is_buffer == (i == TYPEDARRAY || i == DATAVIEW));
+
     e = napi_get_buffer_info(env, value, NULL, &len);
-    assert(e == (i == TYPEDARRAY ? napi_ok : napi_invalid_arg));
+    assert(e == (i == TYPEDARRAY || i == DATAVIEW ? napi_ok : napi_invalid_arg));
+    if (e == napi_ok) assert(len == 4);
 
     e = napi_get_dataview_info(env, value, &len, NULL, NULL, NULL);
     assert(e == (i == DATAVIEW ? napi_ok : napi_invalid_arg));
 
+    bool is_arraybuffer = i == ARRAYBUFFER || i == SHAREDARRAYBUFFER;
+
+    napi_value view;
+    e = napi_create_typedarray(env, napi_uint8_array, 4, value, 0, &view);
+    assert(e == (is_arraybuffer ? napi_ok : napi_invalid_arg));
+
+    e = napi_create_dataview(env, 4, value, 0, &view);
+    assert(e == (is_arraybuffer ? napi_ok : napi_invalid_arg));
+
+    e = node_api_create_buffer_from_arraybuffer(env, value, 0, 4, &view);
+    assert(e == (is_arraybuffer ? napi_ok : napi_arraybuffer_expected));
+
     e = napi_detach_arraybuffer(env, value);
     assert(e == (i == ARRAYBUFFER ? napi_ok : napi_arraybuffer_expected));
   }
+
+  napi_value script;
+  e = napi_create_string_utf8(env, "new WebAssembly.Memory({ initial: 1 }).buffer", -1, &script);
+  assert(e == 0);
+
+  napi_value memory;
+  e = napi_run_script(env, script, &memory);
+  assert(e == 0);
+
+  e = napi_detach_arraybuffer(env, memory);
+  assert(e == napi_detachable_arraybuffer_expected);
 
   napi_teardown_env();
 }

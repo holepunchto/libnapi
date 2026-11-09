@@ -17,6 +17,12 @@ main() {
   e = napi_run_script(env, script, &buffer);
   assert(e == 0);
 
+  bool is_buffer;
+  e = napi_is_buffer(env, buffer, &is_buffer);
+  assert(e == 0);
+
+  assert(is_buffer);
+
   uint16_t *data;
   size_t len;
   e = napi_get_buffer_info(env, buffer, (void **) &data, &len);
