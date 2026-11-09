@@ -251,21 +251,95 @@ napi_convert_to_valuetype(js_value_type_t type) {
   }
 }
 
-// Check that `value` is of the type a `napi_get_value_*()` function expects,
-// returning `status` if it isn't. The `js_get_value_*()` functions don't check
-// the type of their value, so reading a value of the wrong type with them
-// returns garbage or crashes.
 inline napi_status
-napi_check_value_type(napi_env env, napi_value value, js_value_type_t type, napi_status status) {
-  js_value_type_t actual;
+napi_get_value_type(napi_env env, napi_value value, js_value_type_t *result) {
+  if (value == NULL) return napi_set_last_error_info(env, napi_invalid_arg, 0, NULL);
 
-  int err = js_typeof(env, value, &actual);
+  int err = js_typeof(env, value, result);
 
   if (err < 0) return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
 
-  if (actual != type) return napi_set_last_error_info(env, status, 0, NULL);
+  return napi_ok;
+}
+
+inline napi_status
+napi_check_value_type(napi_env env, napi_value value, js_value_type_t type, napi_status error) {
+  js_value_type_t actual;
+
+  napi_status status = napi_get_value_type(env, value, &actual);
+
+  if (status != napi_ok) return status;
+
+  if (actual != type) return napi_set_last_error_info(env, error, 0, NULL);
 
   return napi_ok;
+}
+
+inline napi_status
+napi_check_object(napi_env env, napi_value value, napi_status error) {
+  js_value_type_t type;
+
+  napi_status status = napi_get_value_type(env, value, &type);
+
+  if (status != napi_ok) return status;
+
+  if (type != js_object && type != js_function) return napi_set_last_error_info(env, error, 0, NULL);
+
+  return napi_ok;
+}
+
+inline napi_status
+napi_get_object_type(napi_env env, napi_value value, js_object_type_t *result, napi_status error) {
+  napi_status status = napi_check_value_type(env, value, js_object, error);
+
+  if (status != napi_ok) return status;
+
+  int err = js_get_object_type(env, value, result);
+
+  if (err < 0) return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
+
+  return napi_ok;
+}
+
+inline napi_status
+napi_check_object_type(napi_env env, napi_value value, js_object_type_t type, napi_status error) {
+  js_object_type_t actual;
+
+  napi_status status = napi_get_object_type(env, value, &actual, error);
+
+  if (status != napi_ok) return status;
+
+  if (actual != type) return napi_set_last_error_info(env, error, 0, NULL);
+
+  return napi_ok;
+}
+
+inline napi_status
+napi_to_object(napi_env env, napi_value value, napi_value *result) {
+  js_value_type_t type;
+
+  napi_status status = napi_get_value_type(env, value, &type);
+
+  if (status != napi_ok) return status;
+
+  switch (type) {
+  case js_undefined:
+  case js_null:
+    return napi_set_last_error_info(env, napi_object_expected, 0, NULL);
+
+  case js_object:
+  case js_function:
+    *result = value;
+    return napi_ok;
+
+  default: {
+    int err = js_coerce_to_object(env, value, result);
+
+    if (err < 0) return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
+
+    return napi_ok;
+  }
+  }
 }
 
 inline js_typedarray_type_t
@@ -537,6 +611,10 @@ err:
 
 inline napi_status
 napi_define_properties(napi_env env, napi_value object, size_t len, const napi_property_descriptor *properties) {
+  napi_status status = napi_to_object(env, object, &object);
+
+  if (status != napi_ok) return status;
+
   int err;
 
   js_property_descriptor_t *js_properties = malloc(len * sizeof(js_property_descriptor_t));
@@ -575,6 +653,10 @@ err:
 
 inline napi_status
 napi_wrap(napi_env env, napi_value object, void *data, napi_finalize finalize_cb, void *finalize_hint, napi_ref *result) {
+  napi_status status = napi_check_object(env, object, napi_invalid_arg);
+
+  if (status != napi_ok) return status;
+
   int err = js_wrap(env, object, data, finalize_cb, finalize_hint, result);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
@@ -582,6 +664,10 @@ napi_wrap(napi_env env, napi_value object, void *data, napi_finalize finalize_cb
 
 inline napi_status
 napi_unwrap(napi_env env, napi_value object, void **result) {
+  napi_status status = napi_check_object(env, object, napi_invalid_arg);
+
+  if (status != napi_ok) return status;
+
   int err = js_unwrap(env, object, result);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
@@ -589,6 +675,10 @@ napi_unwrap(napi_env env, napi_value object, void **result) {
 
 inline napi_status
 napi_remove_wrap(napi_env env, napi_value object, void **result) {
+  napi_status status = napi_check_object(env, object, napi_invalid_arg);
+
+  if (status != napi_ok) return status;
+
   int err = js_remove_wrap(env, object, result);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
@@ -596,6 +686,10 @@ napi_remove_wrap(napi_env env, napi_value object, void **result) {
 
 inline napi_status
 napi_add_finalizer(napi_env env, napi_value object, void *data, napi_finalize finalize_cb, void *finalize_hint, napi_ref *result) {
+  napi_status status = napi_check_object(env, object, napi_invalid_arg);
+
+  if (status != napi_ok) return status;
+
   int err = js_add_finalizer(env, object, data, finalize_cb, finalize_hint, result);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
@@ -603,6 +697,10 @@ napi_add_finalizer(napi_env env, napi_value object, void *data, napi_finalize fi
 
 inline napi_status
 napi_type_tag_object(napi_env env, napi_value object, const napi_type_tag *tag) {
+  napi_status status = napi_to_object(env, object, &object);
+
+  if (status != napi_ok) return status;
+
   int err = js_add_type_tag(env, object, &(js_type_tag_t) {tag->lower, tag->upper});
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
@@ -610,6 +708,10 @@ napi_type_tag_object(napi_env env, napi_value object, const napi_type_tag *tag) 
 
 inline napi_status
 napi_check_object_type_tag(napi_env env, napi_value object, const napi_type_tag *tag, bool *result) {
+  napi_status status = napi_to_object(env, object, &object);
+
+  if (status != napi_ok) return status;
+
   int err = js_check_type_tag(env, object, &(js_type_tag_t) {tag->lower, tag->upper}, result);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
@@ -862,6 +964,10 @@ node_api_create_external_sharedarraybuffer(napi_env env, void *data, size_t len,
 
 inline napi_status
 napi_detach_arraybuffer(napi_env env, napi_value arraybuffer) {
+  napi_status status = napi_check_object_type(env, arraybuffer, js_arraybuffer, napi_arraybuffer_expected);
+
+  if (status != napi_ok) return status;
+
   int err = js_detach_arraybuffer(env, arraybuffer);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
@@ -1245,6 +1351,10 @@ napi_get_value_external(napi_env env, napi_value value, void **result) {
 
 inline napi_status
 napi_get_date_value(napi_env env, napi_value value, double *result) {
+  napi_status status = napi_check_object_type(env, value, js_date, napi_date_expected);
+
+  if (status != napi_ok) return status;
+
   int err = js_get_value_date(env, value, result);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
@@ -1252,6 +1362,10 @@ napi_get_date_value(napi_env env, napi_value value, double *result) {
 
 inline napi_status
 napi_get_array_length(napi_env env, napi_value value, uint32_t *result) {
+  napi_status status = napi_check_object_type(env, value, js_array, napi_array_expected);
+
+  if (status != napi_ok) return status;
+
   int err = js_get_array_length(env, value, result);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
@@ -1259,6 +1373,10 @@ napi_get_array_length(napi_env env, napi_value value, uint32_t *result) {
 
 inline napi_status
 napi_get_property_names(napi_env env, napi_value object, napi_value *result) {
+  napi_status status = napi_to_object(env, object, &object);
+
+  if (status != napi_ok) return status;
+
   int err = js_get_property_names(env, object, result);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
@@ -1266,6 +1384,10 @@ napi_get_property_names(napi_env env, napi_value object, napi_value *result) {
 
 inline napi_status
 napi_get_all_property_names(napi_env env, napi_value object, napi_key_collection_mode key_mode, napi_key_filter key_filter, napi_key_conversion key_conversion, napi_value *result) {
+  napi_status status = napi_to_object(env, object, &object);
+
+  if (status != napi_ok) return status;
+
   int err = js_get_filtered_property_names(env, object, napi_convert_from_key_collection_mode(key_mode), napi_convert_from_key_filter(key_filter), js_index_include_indices, napi_convert_from_key_conversion(key_conversion), result);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
@@ -1273,6 +1395,10 @@ napi_get_all_property_names(napi_env env, napi_value object, napi_key_collection
 
 inline napi_status
 napi_get_property(napi_env env, napi_value object, napi_value key, napi_value *result) {
+  napi_status status = napi_to_object(env, object, &object);
+
+  if (status != napi_ok) return status;
+
   int err = js_get_property(env, object, key, result);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
@@ -1280,6 +1406,10 @@ napi_get_property(napi_env env, napi_value object, napi_value key, napi_value *r
 
 inline napi_status
 napi_get_prototype(napi_env env, napi_value object, napi_value *result) {
+  napi_status status = napi_to_object(env, object, &object);
+
+  if (status != napi_ok) return status;
+
   int err = js_get_prototype(env, object, result);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
@@ -1287,6 +1417,10 @@ napi_get_prototype(napi_env env, napi_value object, napi_value *result) {
 
 inline napi_status
 node_api_set_prototype(napi_env env, napi_value object, napi_value value) {
+  napi_status status = napi_to_object(env, object, &object);
+
+  if (status != napi_ok) return status;
+
   int err = js_set_prototype(env, object, value);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
@@ -1294,6 +1428,10 @@ node_api_set_prototype(napi_env env, napi_value object, napi_value value) {
 
 inline napi_status
 napi_object_freeze(napi_env env, napi_value object) {
+  napi_status status = napi_to_object(env, object, &object);
+
+  if (status != napi_ok) return status;
+
   int err = js_freeze(env, object);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
@@ -1301,6 +1439,10 @@ napi_object_freeze(napi_env env, napi_value object) {
 
 inline napi_status
 napi_object_seal(napi_env env, napi_value object) {
+  napi_status status = napi_to_object(env, object, &object);
+
+  if (status != napi_ok) return status;
+
   int err = js_seal(env, object);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
@@ -1308,6 +1450,10 @@ napi_object_seal(napi_env env, napi_value object) {
 
 inline napi_status
 napi_has_property(napi_env env, napi_value object, napi_value key, bool *result) {
+  napi_status status = napi_to_object(env, object, &object);
+
+  if (status != napi_ok) return status;
+
   int err = js_has_property(env, object, key, result);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
@@ -1315,6 +1461,10 @@ napi_has_property(napi_env env, napi_value object, napi_value key, bool *result)
 
 inline napi_status
 napi_has_own_property(napi_env env, napi_value object, napi_value key, bool *result) {
+  napi_status status = napi_to_object(env, object, &object);
+
+  if (status != napi_ok) return status;
+
   int err = js_has_own_property(env, object, key, result);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
@@ -1322,6 +1472,10 @@ napi_has_own_property(napi_env env, napi_value object, napi_value key, bool *res
 
 inline napi_status
 napi_set_property(napi_env env, napi_value object, napi_value key, napi_value value) {
+  napi_status status = napi_to_object(env, object, &object);
+
+  if (status != napi_ok) return status;
+
   int err = js_set_property(env, object, key, value);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
@@ -1329,6 +1483,10 @@ napi_set_property(napi_env env, napi_value object, napi_value key, napi_value va
 
 inline napi_status
 napi_delete_property(napi_env env, napi_value object, napi_value key, bool *result) {
+  napi_status status = napi_to_object(env, object, &object);
+
+  if (status != napi_ok) return status;
+
   int err = js_delete_property(env, object, key, result);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
@@ -1336,6 +1494,10 @@ napi_delete_property(napi_env env, napi_value object, napi_value key, bool *resu
 
 inline napi_status
 napi_get_named_property(napi_env env, napi_value object, const char *name, napi_value *result) {
+  napi_status status = napi_to_object(env, object, &object);
+
+  if (status != napi_ok) return status;
+
   int err = js_get_named_property(env, object, name, result);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
@@ -1343,6 +1505,10 @@ napi_get_named_property(napi_env env, napi_value object, const char *name, napi_
 
 inline napi_status
 napi_has_named_property(napi_env env, napi_value object, const char *name, bool *result) {
+  napi_status status = napi_to_object(env, object, &object);
+
+  if (status != napi_ok) return status;
+
   int err = js_has_named_property(env, object, name, result);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
@@ -1350,6 +1516,10 @@ napi_has_named_property(napi_env env, napi_value object, const char *name, bool 
 
 inline napi_status
 napi_set_named_property(napi_env env, napi_value object, const char *name, napi_value value) {
+  napi_status status = napi_to_object(env, object, &object);
+
+  if (status != napi_ok) return status;
+
   int err = js_set_named_property(env, object, name, value);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
@@ -1357,6 +1527,10 @@ napi_set_named_property(napi_env env, napi_value object, const char *name, napi_
 
 inline napi_status
 napi_get_element(napi_env env, napi_value object, uint32_t index, napi_value *result) {
+  napi_status status = napi_to_object(env, object, &object);
+
+  if (status != napi_ok) return status;
+
   int err = js_get_element(env, object, index, result);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
@@ -1364,6 +1538,10 @@ napi_get_element(napi_env env, napi_value object, uint32_t index, napi_value *re
 
 inline napi_status
 napi_has_element(napi_env env, napi_value object, uint32_t index, bool *result) {
+  napi_status status = napi_to_object(env, object, &object);
+
+  if (status != napi_ok) return status;
+
   int err = js_has_element(env, object, index, result);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
@@ -1371,6 +1549,10 @@ napi_has_element(napi_env env, napi_value object, uint32_t index, bool *result) 
 
 inline napi_status
 napi_set_element(napi_env env, napi_value object, uint32_t index, napi_value value) {
+  napi_status status = napi_to_object(env, object, &object);
+
+  if (status != napi_ok) return status;
+
   int err = js_set_element(env, object, index, value);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
@@ -1378,6 +1560,10 @@ napi_set_element(napi_env env, napi_value object, uint32_t index, napi_value val
 
 inline napi_status
 napi_delete_element(napi_env env, napi_value object, uint32_t index, bool *result) {
+  napi_status status = napi_to_object(env, object, &object);
+
+  if (status != napi_ok) return status;
+
   int err = js_delete_element(env, object, index, result);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
@@ -1399,13 +1585,34 @@ napi_get_new_target(napi_env env, napi_callback_info info, napi_value *result) {
 
 inline napi_status
 napi_get_arraybuffer_info(napi_env env, napi_value arraybuffer, void **data, size_t *len) {
-  int err = js_get_arraybuffer_info(env, arraybuffer, data, len);
+  js_object_type_t type;
+
+  napi_status status = napi_get_object_type(env, arraybuffer, &type, napi_invalid_arg);
+
+  if (status != napi_ok) return status;
+
+  int err;
+
+  switch (type) {
+  case js_arraybuffer:
+    err = js_get_arraybuffer_info(env, arraybuffer, data, len);
+    break;
+  case js_sharedarraybuffer:
+    err = js_get_sharedarraybuffer_info(env, arraybuffer, data, len);
+    break;
+  default:
+    return napi_set_last_error_info(env, napi_invalid_arg, 0, NULL);
+  }
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
 }
 
 inline napi_status
 napi_get_typedarray_info(napi_env env, napi_value typedarray, napi_typedarray_type *type, size_t *len, void **data, napi_value *arraybuffer, size_t *offset) {
+  napi_status status = napi_check_object_type(env, typedarray, js_typedarray, napi_invalid_arg);
+
+  if (status != napi_ok) return status;
+
   js_typedarray_type_t js_type;
 
   int err = js_get_typedarray_info(env, typedarray, type == NULL ? NULL : &js_type, data, len, arraybuffer, offset);
@@ -1421,6 +1628,10 @@ napi_get_typedarray_info(napi_env env, napi_value typedarray, napi_typedarray_ty
 
 inline napi_status
 napi_get_buffer_info(napi_env env, napi_value buffer, void **data, size_t *len) {
+  napi_status status = napi_check_object_type(env, buffer, js_typedarray, napi_invalid_arg);
+
+  if (status != napi_ok) return status;
+
   js_typedarray_type_t js_type;
 
   int err = js_get_typedarray_info(env, buffer, &js_type, data, len, NULL, NULL);
@@ -1455,6 +1666,10 @@ napi_get_buffer_info(napi_env env, napi_value buffer, void **data, size_t *len) 
 
 inline napi_status
 napi_get_dataview_info(napi_env env, napi_value dataview, size_t *len, void **data, napi_value *arraybuffer, size_t *offset) {
+  napi_status status = napi_check_object_type(env, dataview, js_dataview, napi_invalid_arg);
+
+  if (status != napi_ok) return status;
+
   int err = js_get_dataview_info(env, dataview, data, len, arraybuffer, offset);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
@@ -1462,6 +1677,10 @@ napi_get_dataview_info(napi_env env, napi_value dataview, size_t *len, void **da
 
 inline napi_status
 napi_call_function(napi_env env, napi_value receiver, napi_value function, size_t argc, const napi_value argv[], napi_value *result) {
+  napi_status status = napi_check_value_type(env, function, js_function, napi_function_expected);
+
+  if (status != napi_ok) return status;
+
   int err = js_call_function(env, receiver, function, argc, argv, result);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
@@ -1469,6 +1688,10 @@ napi_call_function(napi_env env, napi_value receiver, napi_value function, size_
 
 inline napi_status
 napi_make_callback(napi_env env, napi_async_context async_context, napi_value receiver, napi_value function, size_t argc, const napi_value argv[], napi_value *result) {
+  napi_status status = napi_check_value_type(env, function, js_function, napi_function_expected);
+
+  if (status != napi_ok) return status;
+
   int err = js_call_function_with_checkpoint(env, receiver, function, argc, argv, result);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);
@@ -1476,6 +1699,10 @@ napi_make_callback(napi_env env, napi_async_context async_context, napi_value re
 
 inline napi_status
 napi_new_instance(napi_env env, napi_value constructor, size_t argc, napi_value *argv, napi_value *result) {
+  napi_status status = napi_check_value_type(env, constructor, js_function, napi_function_expected);
+
+  if (status != napi_ok) return status;
+
   int err = js_new_instance(env, constructor, argc, argv, result);
 
   return napi_set_last_error_info(env, napi_convert_to_status(err), (uint32_t) err, NULL);

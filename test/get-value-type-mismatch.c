@@ -39,9 +39,15 @@ main() {
   e = napi_get_undefined(env, &undefined);
   assert(e == 0);
 
-  enum { NUMBER, BIGINT, STRING, BOOLEAN, OBJECT, NULL_, UNDEFINED };
+  int data;
 
-  napi_value values[] = {number, bigint, string, boolean, object, null, undefined};
+  napi_value external;
+  e = napi_create_external(env, &data, NULL, NULL, &external);
+  assert(e == 0);
+
+  enum { NUMBER, BIGINT, STRING, BOOLEAN, OBJECT, NULL_, UNDEFINED, EXTERNAL };
+
+  napi_value values[] = {number, bigint, string, boolean, object, null, undefined, external};
 
   for (size_t i = 0; i < sizeof(values) / sizeof(values[0]); i++) {
     napi_value value = values[i];
@@ -88,10 +94,15 @@ main() {
     e = napi_get_value_string_latin1(env, value, NULL, 0, &len);
     assert(e == (i == STRING ? napi_ok : napi_string_expected));
 
-    void *external;
-    e = napi_get_value_external(env, value, &external);
-    assert(e == napi_invalid_arg);
+    void *ptr;
+    e = napi_get_value_external(env, value, &ptr);
+    assert(e == (i == EXTERNAL ? napi_ok : napi_invalid_arg));
+    if (i == EXTERNAL) assert(ptr == &data);
   }
+
+  int32_t i32;
+  e = napi_get_value_int32(env, NULL, &i32);
+  assert(e == napi_invalid_arg);
 
   napi_teardown_env();
 }
