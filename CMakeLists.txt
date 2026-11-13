@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.22)
+cmake_minimum_required(VERSION 4.0)
 
 find_package(cmake-fetch REQUIRED PATHS node_modules/cmake-fetch)
 find_package(cmake-harden REQUIRED PATHS node_modules/cmake-harden)
@@ -6,6 +6,8 @@ find_package(cmake-harden REQUIRED PATHS node_modules/cmake-harden)
 project(napi C)
 
 fetch_package("github:holepunchto/libjs")
+
+get_property(shared GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS)
 
 add_library(napi OBJECT)
 
@@ -15,7 +17,7 @@ set_target_properties(
   napi
   PROPERTIES
   C_STANDARD 99
-  POSITION_INDEPENDENT_CODE ON
+  POSITION_INDEPENDENT_CODE ${shared}
 )
 
 target_sources(
@@ -46,22 +48,24 @@ target_include_directories(
     $<TARGET_PROPERTY:uv,INTERFACE_INCLUDE_DIRECTORIES>
 )
 
-add_library(napi_shared SHARED)
+if(shared)
+  add_library(napi_shared SHARED)
 
-set_target_properties(
-  napi_shared
-  PROPERTIES
-  OUTPUT_NAME napi
-  WINDOWS_EXPORT_ALL_SYMBOLS ON
-)
+  set_target_properties(
+    napi_shared
+    PROPERTIES
+    OUTPUT_NAME napi
+    WINDOWS_EXPORT_ALL_SYMBOLS ON
+  )
 
-target_link_libraries(
-  napi_shared
-  PUBLIC
-    napi
-    js_shared
-    utf_shared
-)
+  target_link_libraries(
+    napi_shared
+    PUBLIC
+      napi
+      js_shared
+      utf_shared
+  )
+endif()
 
 add_library(napi_static STATIC)
 
@@ -80,7 +84,11 @@ target_link_libraries(
     utf_static
 )
 
-install(TARGETS napi_shared napi_static)
+install(TARGETS napi_static)
+
+if(shared)
+  install(TARGETS napi_shared)
+endif()
 
 install(FILES include/napi.h DESTINATION include)
 
