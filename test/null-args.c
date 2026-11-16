@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "../include/napi.h"
+#include <napi.h>
 #include "helpers.h"
 
 static napi_value

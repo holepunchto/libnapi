@@ -1,53 +1,39 @@
-list(APPEND tests
-  basic
-  callback-uncaught-exception
-  cleanup-hook-errors
-  create-async-work
-  create-async-work-without-complete
-  create-buffer-copy
-  create-buffer-from-arraybuffer
-  create-view-out-of-range
-  define-properties-const-descriptors
-  get-buffer-info-uint8array
-  get-buffer-info-uint16array
-  get-info-type-mismatch
-  get-instance-data
-  get-all-property-names-filter
-  get-version
-  get-value-string-utf8
-  get-value-string-utf8-length
-  get-value-string-utf8-truncate
-  get-value-string-null-buffer
-  get-value-type-mismatch
-  invalid-args
-  module
-  module-constructor
-  null-args
-  object-freeze
-  object-seal
-  object-type-mismatch
-  post-finalizer
-  run-script-uncaught-exception
+if(TARGET napi_shared)
+  set(library napi::shared)
+else()
+  set(library napi::static)
+endif()
+
+add_test_executables(
+  basic.c
+  callback-uncaught-exception.c
+  cleanup-hook-errors.c
+  create-async-work.c
+  create-async-work-without-complete.c
+  create-buffer-copy.c
+  create-buffer-from-arraybuffer.c
+  create-view-out-of-range.c
+  define-properties-const-descriptors.c
+  get-buffer-info-uint8array.c
+  get-buffer-info-uint16array.c
+  get-info-type-mismatch.c
+  get-instance-data.c
+  get-all-property-names-filter.c
+  get-version.c
+  get-value-string-utf8.c
+  get-value-string-utf8-length.c
+  get-value-string-utf8-truncate.c
+  get-value-string-null-buffer.c
+  get-value-type-mismatch.c
+  invalid-args.c
+  module.c
+  module-constructor.c
+  null-args.c
+  object-freeze.c
+  object-seal.c
+  object-type-mismatch.c
+  post-finalizer.c
+  run-script-uncaught-exception.c
+  LINK
+    ${library}
 )
-
-foreach(test IN LISTS tests)
-  add_executable(${test} ${test}.c)
-
-  target_link_libraries(
-    ${test}
-    PRIVATE
-      napi_shared
-  )
-
-  add_test(
-    NAME ${test}
-    COMMAND ${test}
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-  )
-
-  set_tests_properties(
-    ${test}
-    PROPERTIES
-    TIMEOUT 30
-  )
-endforeach()

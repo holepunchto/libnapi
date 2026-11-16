@@ -1,7 +1,7 @@
 #include <assert.h>
 #include <stdbool.h>
 
-#include "../include/napi.h"
+#include <napi.h>
 #include "helpers.h"
 
 static int uncaught_count = 0;

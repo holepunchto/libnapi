@@ -5,7 +5,7 @@
 #include <js.h>
 #include <uv.h>
 
-#include "../include/napi.h"
+#include <napi.h>
 
 static js_env_t *env;
 static js_platform_t *platform;

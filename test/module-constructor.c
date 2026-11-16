@@ -4,7 +4,7 @@
 #include <assert.h>
 #include <string.h>
 
-#include "../include/napi.h"
+#include <napi.h>
 #include "helpers.h"
 
 bool register_called = false;
