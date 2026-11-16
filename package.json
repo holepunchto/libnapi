@@ -13,6 +13,8 @@
   "homepage": "https://github.com/holepunchto/libnapi#readme",
   "devDependencies": {
     "cmake-fetch": "^1.0.0",
-    "cmake-harden": "^1.1.2"
+    "cmake-harden": "^1.1.2",
+    "cmake-prelude": "^0.1.0",
+    "cmake-test": "^0.1.0"
   }
 }

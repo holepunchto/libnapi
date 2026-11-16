@@ -1,7 +1,7 @@
 #include <assert.h>
 #include <string.h>
 
-#include "../include/napi.h"
+#include <napi.h>
 #include "helpers.h"
 
 bool init_called = false;

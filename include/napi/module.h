@@ -21,6 +21,12 @@
 #define NAPI_MODULE_EXTERN_C_END
 #endif
 
+#ifdef _WIN32
+#define NAPI_MODULE_EXPORT __declspec(dllexport)
+#else
+#define NAPI_MODULE_EXPORT __attribute__((visibility("default")))
+#endif
+
 #define NAPI_MODULE_SYMBOL_HELPER(base, version) NAPI_MODULE_CONCAT(base, version)
 
 #define NAPI_MODULE_SYMBOL_REGISTER_BASE napi_register_module_v
@@ -67,7 +73,7 @@
 
 #define NAPI_MODULE(name, fn) \
   NAPI_MODULE_EXTERN_C_START \
-  napi_value NAPI_MODULE_SYMBOL_REGISTER(napi_env env, napi_value exports) { \
+  NAPI_MODULE_EXPORT napi_value NAPI_MODULE_SYMBOL_REGISTER(napi_env env, napi_value exports) { \
     return fn(env, exports); \
   } \
   NAPI_MODULE_EXTERN_C_END

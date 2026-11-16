@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "../include/napi.h"
+#include <napi.h>
 #include "helpers.h"
 
 int

@@ -1,6 +1,6 @@
 #include <assert.h>
 
-#include "../include/napi.h"
+#include <napi.h>
 #include "helpers.h"
 
 static napi_async_work work;
