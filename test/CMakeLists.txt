@@ -1,9 +1,3 @@
-if(TARGET napi_shared)
-  set(library napi::shared)
-else()
-  set(library napi::static)
-endif()
-
 add_test_executables(
   basic.c
   callback-uncaught-exception.c
@@ -35,5 +29,5 @@ add_test_executables(
   post-finalizer.c
   run-script-uncaught-exception.c
   LINK
-    ${library}
+    napi::<TYPE>
 )
