@@ -21,6 +21,8 @@ add_library_targets(
   LINK
     js::<TYPE>
     utf::<TYPE>
+  EXPORTS_FROM
+    src/exports.json
   EXPORT OFF
 )
 

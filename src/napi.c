@@ -100,6 +100,12 @@ napi_convert_to_status(int err) {
     return napi_ok;
   case js_pending_exception:
     return napi_pending_exception;
+  case js_closing:
+    return napi_closing;
+  case js_queue_full:
+    return napi_queue_full;
+  case js_invalid_state:
+    return napi_invalid_arg;
   default:
     return napi_generic_failure;
   }
@@ -2211,7 +2217,7 @@ napi_call_threadsafe_function(napi_threadsafe_function function, void *data, nap
 
   int err = js_call_threadsafe_function(function, data, napi_convert_from_threadsafe_function_call_mode(mode));
 
-  return err == 0 ? napi_ok : napi_invalid_arg;
+  return napi_convert_to_status(err);
 }
 
 napi_status
@@ -2220,7 +2226,7 @@ napi_acquire_threadsafe_function(napi_threadsafe_function function) {
 
   int err = js_acquire_threadsafe_function(function);
 
-  return err == 0 ? napi_ok : napi_invalid_arg;
+  return napi_convert_to_status(err);
 }
 
 napi_status
@@ -2229,7 +2235,7 @@ napi_release_threadsafe_function(napi_threadsafe_function function, napi_threads
 
   int err = js_release_threadsafe_function(function, napi_convert_from_threadsafe_function_release_mode(mode));
 
-  return err == 0 ? napi_ok : napi_invalid_arg;
+  return napi_convert_to_status(err);
 }
 
 napi_status
